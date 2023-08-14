@@ -1,6 +1,7 @@
 package no.colfermentada.board;
 
 import no.colfermentada.cards.Card;
+import no.colfermentada.cards.Sigil;
 import no.colfermentada.cards.Tribe;
 import no.colfermentada.deck.Deck;
 import no.colfermentada.cards.CostType;
@@ -8,55 +9,46 @@ import no.colfermentada.cards.CostType;
 import java.util.ArrayList;
 
 public class Board {
-    protected Card[] played;
-    protected Card[] opposing;
-    protected Card[] approaching;
+    protected Card[] playedCards;
+    protected Card[] opposingCards;
+    protected Card[] approachingCards;
     protected ArrayList<Card> hand;
     protected ArrayList<Card> currentDeck;
     protected ArrayList<Card> squirrelDeck;
     protected ArrayList<Card> discardedPile;
-    protected int bones;
-    protected int score;
 
 
     public Board(Deck deck) {
-        played = new Card[4];
-        opposing = new Card[4];
-        approaching = new Card[4];
+        playedCards = new Card[4];
+        opposingCards = new Card[4];
+        approachingCards = new Card[4];
+
         hand = new ArrayList<Card>();
         currentDeck = deck.getCards();
-        Card squirrel = new Card("Squirrel", "Squirrel", 1, 0, CostType.None, 0, Tribe.Squirrel);
+
+        Card squirrel = new Card("Squirrel", 1, 0, CostType.None, 0, Tribe.Squirrel);
         squirrelDeck = new ArrayList<Card>();
         for (int i = 0; i <= 10; i++) {
             squirrelDeck.add(new Card(squirrel));
         }
+
         discardedPile = new ArrayList<Card>();
-        bones = 0;
-        score = 0;
     }
 
-    public Card[] getPlayed() {
-        return played;
+    public Card[] getPlayedCards() {
+        return playedCards;
     }
 
-    public Card[] getOpposing() {
-        return opposing;
+    public Card[] getOpposingCards() {
+        return opposingCards;
     }
 
-    public Card[] getApproaching() {
-        return approaching;
+    public Card[] getApproachingCards() {
+        return approachingCards;
     }
 
     public ArrayList<Card> getHand() {
         return hand;
-    }
-
-    public int getBones() {
-        return bones;
-    }
-
-    public int getScore() {
-        return score;
     }
 
     public void drawFromDeck(int card) {
@@ -71,106 +63,27 @@ public class Board {
         }
     }
 
-    // Play card method for free or bones CostTypes
-    // TODO: create errorclass and throw errors
-    public void playCard(int cardIndex, int slot) {
-        Card card = hand.get(cardIndex);
-        CostType costType = card.getCostType();
-        int cost = card.getCost();
-
-        if (costType == CostType.Blood) {
-            System.out.println("You must sacrifice");
-            return;
-        }
-
-        if (costType == CostType.Bones && cost > bones) {
-            System.out.println("Not enough bones");
-            return;
-        }
-
-        if (played[slot] != null) {
-            System.out.println("Slot is not empty");
-            return;
-        }
-
-
-        bones -= cost;
-        played[slot] = hand.remove(cardIndex);
-    }
-
-    // Play card method for blood CostType
-    public void playCard(int cardIndex, int slot, int[] sacrifice) {
-        Card card = hand.get(cardIndex);
-
-        if (card.getCostType() == CostType.Blood) {
-            int requiredSacrifice = card.getCost();
-            if (requiredSacrifice < sacrifice.length) {
-                System.out.println("Not enough sacrifice");
-                return;
-            } else if (requiredSacrifice > sacrifice.length) {
-                System.out.println("Too much sacrifice");
-                return;
-            }
-            for (int i : sacrifice) {
-                discardedPile.add(played[i]);
-                played[i] = null;
-            }
+    public void placePlayerCard(Card card, int slot) throws InvalidBoardException {
+        if (playedCards[slot] == null) {
+            playedCards[slot] = card;
         } else {
-            System.out.println("Sacrifice not needed");
+            throw new InvalidBoardException("Slot not empty");
         }
-
-        if (played[slot] != null) {
-            System.out.println("Slot is not empty");
-            return;
-        }
-
-        played[slot] = hand.remove(cardIndex);
     }
 
-    public void opponentPlaysCard(Card card, int slot) {
-        if (approaching[slot] == null) {
-            approaching[slot] = card;
+    public void placeOpponentCard(Card card, int slot) throws InvalidBoardException {
+        if (approachingCards[slot] == null) {
+            approachingCards[slot] = card;
         } else {
-            System.out.println("Slot is not empty");
+            throw new InvalidBoardException("Slot not empty");
         }
     }
 
-    public void playerAttacks() {
+    public void opponentCardsApproaches() {
         for (int i = 0; i < 4; i++) {
-            if (played[i] != null) {
-                if (opposing[i] != null) {
-                    opposing[i].takeDamage(played[i].getPower());
-                    if (opposing[i].getCurrentHealth() <= 0) {
-                        opposing[i] = null;
-                    }
-                } else {
-                    score += played[i].getPower();
-                }
-            }
-        }
-    }
-
-    public void opponentAttacks() {
-        for (int i = 0; i < 4; i++) {
-            if (opposing[i] != null) {
-                if (played[i] != null) {
-                    played[i].takeDamage(opposing[i].getPower());
-                    if (played[i].getCurrentHealth() <= 0) {
-                        discardedPile.add(played[i]);
-                        played[i] = null;
-                    }
-                } else {
-                    score -= opposing[i].getPower();
-                }
-            }
-        }
-    }
-
-    public void opponentApproaches() {
-        for (int i = 0; i < 4; i++) {
-            if (approaching[i] != null && opposing[i] == null) {
-                opposing[i] = approaching[i];
-                approaching[i] = null;
+            if (approachingCards[i] != null && opposingCards[i] == null) {
+                opposingCards[i] = approachingCards[i];
+                approachingCards[i] = null;
             }
         }
     }
@@ -241,18 +154,5 @@ public class Board {
         builder.append("\n");
 
         return builder.toString();
-    }
-
-    public String displayBoard() {
-
-        return "Approaching: \n" +
-                displayCards(approaching) +
-                "Opposing: \n" +
-                displayCards(opposing) +
-                "Played: \n" +
-                displayCards(played) +
-                "Hand: \n" +
-                displayCards(hand) +
-                "Score: " + score;
     }
 }

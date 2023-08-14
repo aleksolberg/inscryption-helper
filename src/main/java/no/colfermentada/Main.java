@@ -3,6 +3,7 @@ package no.colfermentada;
 import no.colfermentada.board.Board;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.CostType;
+import no.colfermentada.cards.Sigil;
 import no.colfermentada.cards.Tribe;
 import no.colfermentada.deck.Deck;
 
@@ -16,16 +17,23 @@ public class Main {
         board.drawSquirrel();
         board.drawFromDeck(1);
         board.drawFromDeck(0);
+        board.drawFromDeck(1);
 
-        Card sparrow = new Card("Sparrow", "Sparrow", 2, 1, CostType.Blood, 1, Tribe.Avian);
-        Card elk = new Card("Elk", "Elk", 4, 2, CostType.Blood, 2, Tribe.Hooved);
+        Card sparrow = new Card("Sparrow", 2, 1, CostType.Blood, 1, Tribe.Avian, Sigil.Airborne);
+        Card elk = new Card("Elk", 4, 2, CostType.Blood, 2, Tribe.Hooved, Sigil.Sprinter);
         board.opponentPlaysCard(sparrow, 2);
-        board.opponentPlaysCard(elk, 3);
+        //board.opponentPlaysCard(elk, 3);
 
         System.out.println(board.displayBoard());
         board.playCard(0, 3);
         System.out.println(board.displayBoard());
-        board.playCard(0, 3, new int[]{3});
+        board.playCard(2, 3, new int[]{3});
+        System.out.println(board.displayBoard());
+        board.playerAttacks();
+        System.out.println(board.displayBoard());
+        board.opponentApproaches();
+        System.out.println(board.displayBoard());
+        board.opponentAttacks();
         System.out.println(board.displayBoard());
 
     }

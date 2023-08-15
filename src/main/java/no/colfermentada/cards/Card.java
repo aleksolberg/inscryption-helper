@@ -1,116 +1,136 @@
 package no.colfermentada.cards;
 
-import java.util.ArrayList;
+import no.colfermentada.utils.CardUtils;
 
-public class Card {
-    protected String name;
-    protected String shortName;
-    protected int health;
-    protected int power;
-    protected int currentHealth;
-    protected CostType costType;
-    protected int cost;
-    protected Tribe tribe;
-    protected ArrayList<Sigil> sigils;
+import java.util.EnumSet;
+import java.util.Objects;
 
-    public Card(String name, String shortName, int health, int power, CostType costType, int cost, Tribe tribe, ArrayList<Sigil> sigils)
-            throws InvalidCardException {
-        if (shortName.length() > 8) {
-            throw new InvalidCardException("shortName too long. Use constructor without shotName to generate automatically");
+public class Card implements Cloneable {
+    private String name;
+    private String shortName;
+    private int health;
+    private int currentHealth;
+    private int power;
+    private CostType costType;
+    private int cost;
+    private Tribe tribe;
+    private EnumSet<Sigil> sigils;
+
+    private Card(Builder builder) {
+        this.name = builder.name;
+        this.shortName = builder.shortName;
+        this.health = builder.health;
+        this.currentHealth = builder.health;
+        this.power = builder.power;
+        this.costType = builder.costType;
+        this.cost = builder.cost;
+        this.tribe = builder.tribe;
+        this.sigils = builder.sigils;
+    }
+
+    public static class Builder {
+        private String name;
+        private String shortName;
+        private int health;
+        private int power;
+        private int currentHealth = health;
+        private CostType costType;
+        private int cost;
+        private Tribe tribe;
+        private EnumSet<Sigil> sigils = EnumSet.noneOf(Sigil.class);;
+
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
         }
-        this.name = name;
-        this.shortName = shortName;
-        this.health = health;
-        currentHealth = health;
-        this.power = power;
-        this.costType = costType;
-        this.cost = cost;
-        this.tribe = tribe;
-        this.sigils = sigils;
-    }
 
-    public Card(String name, String shortName, int health, int power, CostType costType, int cost, Tribe tribe, Sigil sigil)
-            throws InvalidCardException {
-        if (shortName.length() > 8) {
-            throw new InvalidCardException("shortName too long. Use constructor without shotName to generate automatically");
+        public Builder withShortName(String shortName) {
+            this.shortName = shortName;
+            return this;
         }
-        this.name = name;
-        this.shortName = shortName; // TODO: throw error if shortName to long
-        this.health = health;
-        currentHealth = health;
-        this.power = power;
-        this.costType = costType;
-        this.cost = cost;
-        this.tribe = tribe;
-        this.sigils = new ArrayList<Sigil>() {{
-            add(sigil);
-        }};
-    }
 
-    public Card(String name, String shortName, int health, int power, CostType costType, int cost, Tribe tribe)
-            throws InvalidCardException {
-        if (shortName.length() > 8) {
-            throw new InvalidCardException("shortName too long. Use constructor without shotName to generate automatically");
+        public Builder withHealth(int health) {
+            this.health = health;
+            return this;
         }
-        this.name = name;
-        this.shortName = shortName;
-        this.health = health;
-        currentHealth = health;
-        this.power = power;
-        this.costType = costType;
-        this.cost = cost;
-        this.tribe = tribe;
-        this.sigils = new ArrayList<Sigil>();
+
+        public Builder withPower(int power) {
+            this.power = power;
+            return this;
+        }
+
+        public Builder withCostType(CostType costType) {
+            this.costType = costType;
+            return this;
+        }
+
+        public Builder withCost(int cost) {
+            this.cost = cost;
+            return this;
+        }
+
+        public Builder withTribe(Tribe tribe) {
+            this.tribe = tribe;
+            return this;
+        }
+
+        public Builder withSigil(Sigil sigil) {
+            this.sigils.add(sigil);
+            return this;
+        }
+
+        public Card build() throws InvalidCardException {
+            if (name == null) {
+                throw new InvalidCardException("Card must have a name");
+            }
+            if (shortName != null && shortName.length() > 8) {
+                throw new InvalidCardException("shortName too long.");
+            }
+            if (health <= 0) {
+                throw new InvalidCardException("Card can not have health lower than one");
+            }
+            if (power < 0) {
+                throw new InvalidCardException("Card can not have negative power");
+            }
+            if (cost < 0) {
+                throw new InvalidCardException("Invalid cost");
+            }
+            if (costType == null) {
+                costType = CostType.None;
+            }
+            if (tribe == null) {
+                tribe = Tribe.None;
+            }
+            if (shortName == null && name.length() <= 8) {
+                shortName = name;
+            } else {
+                shortName = CardUtils.generateShortName(name);
+            }
+
+            return new Card(this);
+        }
     }
 
-    public Card(String name, int health, int power, CostType costType, int cost, Tribe tribe) {
-        this.name = name;
-        this.shortName = generateShortName();
-        this.health = health;
-        currentHealth = health;
-        this.power = power;
-        this.costType = costType;
-        this.cost = cost;
-        this.tribe = tribe;
-        this.sigils = new ArrayList<Sigil>();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return health == card.health && power == card.power && currentHealth == card.currentHealth && cost == card.cost && Objects.equals(name, card.name) && Objects.equals(shortName, card.shortName) && costType == card.costType && tribe == card.tribe && Objects.equals(sigils, card.sigils);
     }
 
-    public Card(String name, int health, int power, CostType costType, int cost, Tribe tribe, Sigil sigil) {
-        this.name = name;
-        this.shortName = generateShortName();
-        this.health = health;
-        currentHealth = health;
-        this.power = power;
-        this.costType = costType;
-        this.cost = cost;
-        this.tribe = tribe;
-        this.sigils = new ArrayList<Sigil>() {{
-            add(sigil);
-        }};
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, shortName, health, power, currentHealth, costType, cost, tribe, sigils);
     }
 
-    public Card(String name, int health, int power, CostType costType, int cost, Tribe tribe, ArrayList<Sigil> sigils) {
-        this.name = name;
-        this.shortName = generateShortName();
-        this.health = health;
-        currentHealth = health;
-        this.power = power;
-        this.costType = costType;
-        this.cost = cost;
-        this.tribe = tribe;
-        this.sigils = sigils;
-    }
-
-    public Card(Card card) {
-        name = card.getName();
-        shortName = card.getShortName();
-        health = card.getHealth();
-        currentHealth = health;
-        power = card.getPower();
-        costType = card.getCostType();
-        cost = card.getCost();
-        tribe = card.getTribe();
-        sigils = card.getSigils();
+    @Override
+    public Card clone() {
+        try {
+            return (Card) super.clone();  // Cast the result to Card
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Cannot clone Card", e);
+        }
     }
 
     public String getName() {
@@ -141,28 +161,6 @@ public class Card {
         return currentHealth;
     }
 
-    public String generateShortName() {
-        String vowels = "aeiou";
-        StringBuilder result = new StringBuilder(name);
-
-        for (int i = name.length() - 1; i >= 0; i--) {
-            if (vowels.indexOf(name.charAt(i)) != -1) {
-                result.deleteCharAt(i);
-                if (result.length() <= 8) {
-                    break;
-                }
-            }
-        }
-        if (result.length() > 8) {
-            return result.substring(0, 8);
-        }
-        return result.toString();
-    }
-
-    public void resetCard() {
-        currentHealth = health;
-    }
-
     public void takeDamage(int damage) {
         currentHealth -= damage;
     }
@@ -179,11 +177,15 @@ public class Card {
         return cost + costType.name().substring(0, 2);
     }
 
-    public ArrayList<Sigil> getSigils() {
-        return sigils;
+    public EnumSet<Sigil> getSigils() {
+        return EnumSet.copyOf(sigils);
     }
 
     public boolean isDead() {
-        return currentHealth >= 0;
+        return currentHealth <= 0;
+    }
+
+    public void resetCard() {
+        currentHealth = health;
     }
 }

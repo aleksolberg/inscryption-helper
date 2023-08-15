@@ -14,13 +14,13 @@ public class Game {
     protected int score;
     protected int bones;
 
-    public void Game(Board board) {
+    public Game(Board board) {
         this.board = board;
         score = 0;
         bones = 0;
     }
 
-    public String displayBoard() {
+    /*public String displayBoard() {
         return "Approaching: \n" +
                 board.displayCards(board.getApproachingCards()) +
                 "Opposing: \n" +
@@ -31,7 +31,7 @@ public class Game {
                 board.displayCards(board.getHand()) +
                 "Score: " + score +
                 "\tBones: " + bones;
-    }
+    }*/
 
     // Play card method for free or bones CostTypes
     public void playCard(int cardIndex, int slot) throws InvalidMoveException {
@@ -157,6 +157,10 @@ public class Game {
         score += attackingCard.getPower();
     }
 
+    public void opponentAttacksScore(Card attackingCard) {
+        score -= attackingCard.getPower();
+    }
+
     public void attackCard(Card attackingCard, Card attackedCard) {
         attackedCard.takeDamage(attackingCard.getPower());
     }
@@ -165,16 +169,37 @@ public class Game {
         for (int slot = 0; slot < 4; slot++) {
             Card attackingCard = board.getPlayedCards()[slot];
             if (attackingCard != null) {
-                // There is a card at slot i
+                // There is a card at slot
                 ArrayList<Integer> attackedSlots = getAttackedSlots(attackingCard, slot);
-                for (Integer j : attackedSlots) {
-                    Card attackedCard = board.getOpposingCards()[j];
+                for (Integer i : attackedSlots) {
+                    Card attackedCard = board.getOpposingCards()[i];
                     if (attacksScore(attackingCard, attackedCard)) {
                         playerAttacksScore(attackingCard);
                     } else {
                         attackCard(attackingCard, attackedCard);
                         if (attackedCard.isDead()) {
-                            board.getOpposingCards()[j] = null;
+                            board.getOpposingCards()[i] = null;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void opponentAttacks() {
+        for (int slot = 0; slot < 4; slot++) {
+            Card attackingCard = board.getOpposingCards()[slot];
+            if (attackingCard != null) {
+                // There is a card at slot
+                ArrayList<Integer> attackedSlots = getAttackedSlots(attackingCard, slot);
+                for (Integer i : attackedSlots) {
+                    Card attackedCard = board.getPlayedCards()[i];
+                    if (attacksScore(attackingCard, attackedCard)) {
+                        opponentAttacksScore(attackingCard);
+                    } else {
+                        attackCard(attackingCard, attackedCard);
+                        if (attackedCard.isDead()) {
+                            board.discardCard(i);
                         }
                     }
                 }

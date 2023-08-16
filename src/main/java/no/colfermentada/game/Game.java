@@ -4,11 +4,11 @@ import no.colfermentada.board.Board;
 import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.CostType;
+import no.colfermentada.cards.InvalidCardException;
 import no.colfermentada.cards.Sigil;
-import no.colfermentada.utils.CardDisplayer;
+import no.colfermentada.deck.Deck;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class Game {
     private Board board;
@@ -20,6 +20,22 @@ public class Game {
         this.board = board;
         score = 0;
         bones = 0;
+    }
+
+    public Game() throws InvalidCardException {
+        this(new Board());
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getBones() {
+        return bones;
     }
 
     public String displayGame() {
@@ -44,98 +60,12 @@ public class Game {
         return score <= -5;
     }
 
-    protected void increaseBones(int amount) {
+    public void increaseBones(int amount) {
         bones += amount;
     }
 
-    protected void decreaseBones(int amount) {
+    public void decreaseBones(int amount) {
         bones -= amount;
-    }
-
-    // Play card method for free or bones CostTypes
-    public void playCard(int cardIndex, int slot) throws InvalidMoveException {
-        Card card = board.getHand().get(cardIndex);
-        CostType costType = card.getCostType();
-        int cost = card.getCost();
-
-        if (costType == CostType.Blood) {
-            throw new InvalidMoveException("You must sacrifice");
-        }
-
-        if (costType == CostType.Bones && cost > bones) {
-            throw new InvalidMoveException("Not enough bones");
-        }
-
-        try {
-            board.placePlayerCard(card, slot);
-        } catch (InvalidBoardException e) {
-            throw new InvalidMoveException(e.getMessage());
-        }
-        bones -= cost;
-    }
-
-    // Play card method for blood CostType with one sacrifice
-    public void playCard(int cardIndex, int slot, int sacrifice) throws InvalidMoveException {
-        Card card = board.getHand().get(cardIndex);
-
-        if ((board.getPlayedCards()[slot] != null) || sacrifice != slot) {
-            throw new InvalidMoveException("Slot not empty");
-        }
-
-        if (card.getCostType() == CostType.Blood) {
-            int requiredSacrifice = card.getCost();
-            if (requiredSacrifice > 1) {
-                throw new InvalidMoveException("Not enough sacrifice");
-            } else {
-                board.getPlayedCards()[sacrifice] = null;
-            }
-        } else {
-            System.out.println("Sacrifice not needed. Making move without sacrificing.");
-        }
-
-        try {
-            board.placePlayerCard(card, slot);
-        } catch (InvalidBoardException e) {
-            throw new InvalidMoveException(e.getMessage());
-        }
-    }
-
-    // Play card method for blood CostType with more than one sacrifice
-    public void playCard(int cardIndex, int slot, int[] sacrifices) throws InvalidMoveException {
-        Card card = board.getHand().get(cardIndex);
-
-        boolean sacrificesPlayedSlot = false;
-        for (int sacrificedSlot :sacrifices) {
-            if (sacrificedSlot == slot) {
-                sacrificesPlayedSlot = true;
-                break;
-            }
-        }
-
-        if (board.getPlayedCards()[slot] != null || !sacrificesPlayedSlot) {
-            throw new InvalidMoveException("Slot not empty");
-        }
-
-        if (card.getCostType() == CostType.Blood) {
-            int requiredSacrifice = card.getCost();
-            if (requiredSacrifice > sacrifices.length) {
-                throw new InvalidMoveException("Not enough sacrifice");
-            } else if (requiredSacrifice < sacrifices.length) {
-                throw new InvalidMoveException("Too much sacrifice");
-            } else {
-                for (int sacrificedSlot : sacrifices) {
-                    board.getPlayedCards()[sacrificedSlot] = null;
-                }
-            }
-        } else {
-            System.out.println("Sacrifice not needed. Making move without sacrificing.");
-        }
-
-        try {
-            board.placePlayerCard(card, slot);
-        } catch (InvalidBoardException e) {
-            throw new InvalidMoveException(e.getMessage());
-        }
     }
 
     public ArrayList<Integer> getAttackedSlots(Card card, int slot) {
@@ -218,7 +148,7 @@ public class Game {
                     } else {
                         attackCard(attackingCard, attackedCard);
                         if (attackedCard.isDead()) {
-                            board.discardCard(i);
+                            board.discardCardInSlot(i);
                         }
                     }
                 }

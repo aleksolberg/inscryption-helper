@@ -15,19 +15,14 @@ public class Board {
     private Card[] playedCards;
     private Card[] opposingCards;
     private Card[] approachingCards;
-    private Deck deck;
-    private ArrayList<Card> hand;
     private ArrayList<Card> squirrelDeck;
     private ArrayList<Card> discardedPile;
     private CardDisplayer displayer;
 
-    public Board(Deck deck) throws InvalidCardException {
+    public Board() throws InvalidCardException {
         playedCards = new Card[NUM_SLOTS];
         opposingCards = new Card[NUM_SLOTS];
         approachingCards = new Card[NUM_SLOTS];
-
-        hand = new ArrayList<Card>();
-        this.deck = deck;
 
         Card squirrel = new Card.Builder()
                 .withName("Squirrel")
@@ -45,10 +40,6 @@ public class Board {
         displayer = new CardDisplayer();
     }
 
-    public Board() throws InvalidCardException {
-        this(new Deck());
-    }
-
     public Card[] getPlayedCards() {
         return playedCards;
     }
@@ -61,21 +52,9 @@ public class Board {
         return approachingCards;
     }
 
-    public ArrayList<Card> getHand() {
-        return hand;
-    }
-
-    public void drawSpecificCardFromDeck(int index) throws InvalidDeckException {
-        if (index >= deck.currentSize()) {
-            throw new InvalidDeckException("Index of deck out of bounds");
-        } else {
-            hand.add(deck.drawSpecificCard(index));
-        }
-    }
-
-    public void drawSquirrel() throws InvalidBoardException {
+    public Card drawSquirrel() throws InvalidBoardException {
         if (!squirrelDeck.isEmpty()) {
-            hand.add(squirrelDeck.remove(0));
+            return (squirrelDeck.remove(0));
         } else {
             throw new InvalidBoardException("Cannot draw squirrel from empty sqirrel deck");
         }
@@ -103,9 +82,13 @@ public class Board {
         }
     }
 
-    public void discardCard(int slot) {
+    public void discardCardInSlot(int slot) {
         discardedPile.add(playedCards[slot]);
         playedCards[slot] = null;
+    }
+
+    public void removeOpposingCardInSlot(int slot) {
+        opposingCards[slot] = null;
     }
 
     public void opponentCardsApproaches() {
@@ -131,8 +114,6 @@ public class Board {
                 "Opposing: \n" +
                 displayer.displayCards(Arrays.asList(opposingCards)) +
                 "Played: \n" +
-                displayer.displayCards(Arrays.asList(playedCards)) +
-                "Hand: \n" +
-                displayer.displayCards(hand);
+                displayer.displayCards(Arrays.asList(playedCards));
     }
 }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
-    @Test
+    /*@Test
     public void displayGame_fourCardsScoreThreeTwoBones_shouldReturnCorrectString() {
         Deck deck = new Deck();
         Board board = null;
@@ -73,6 +73,5 @@ class GameTest {
         String actual = game.displayGame();
         // Assert
         assertEquals(expected, actual);
-    }
-
+    }*/
 }

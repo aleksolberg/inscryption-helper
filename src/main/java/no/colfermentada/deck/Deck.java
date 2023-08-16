@@ -71,8 +71,13 @@ public class Deck {
         permanentCards.add(card);
     }
 
-    public void returnCardToCurrent(Card card) {
-        currentCards.add(card);
+    public void returnCardToCurrent(Card card) throws InvalidDeckException {
+        if (permanentCards.contains(card)) {
+            currentCards.add(card);
+        } else {
+            throw new InvalidDeckException("Tried to add card to current deck that is not in permanent deck.");
+        }
+
     }
 
     public void removeCardPermanently(Card card) {

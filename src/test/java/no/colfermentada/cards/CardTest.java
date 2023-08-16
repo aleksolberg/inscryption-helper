@@ -177,4 +177,39 @@ class CardTest {
         // Assert
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void displayCard_validCard_shouldReturnCorrectString() {
+        // Arrange
+        String name = "Bloodhound";
+        int health = 3;
+        int power = 2;
+        CostType costType = CostType.Blood;
+        int cost = 2;
+        Tribe tribe = Tribe.Canine;
+        Sigil sigil = Sigil.Guardian;
+        Card card = null;
+        try {
+            card = new Card.Builder()
+                    .withName(name)
+                    .withHealth(health)
+                    .withPower(power)
+                    .withCostType(costType)
+                    .withCost(cost)
+                    .withTribe(tribe)
+                    .withSigil(sigil)
+                    .build();
+        } catch (InvalidCardException e) {
+            throw new RuntimeException(e);
+        }
+        String expected = "+--------+\n" +
+                "|Bloodhnd|\n" +
+                "|  Ca 2Bl|\n" +
+                "|   2   3|\n" +
+                "+--------+\n";
+        // Act
+        String actual = card.displayCard();
+        // Assert
+        assertEquals(expected, actual);
+    }
 }

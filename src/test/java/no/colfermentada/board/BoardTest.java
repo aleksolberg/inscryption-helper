@@ -67,26 +67,46 @@ class BoardTest {
         System.out.println(board.displayCards(board.getHand()));
     }
 
-    /*@Test
-    public void drawCard_validCard_shouldReturnCorrectCardInHand() {
+    @Test
+    public void drawCard_validCard_shouldReturnCorrectCardInHand() throws InvalidCardException, InvalidDeckException {
         // Arrange
         Deck deck = new Deck();
-        Card card = new Card("Stoat", 2, 1, CostType.Blood, 1, Tribe.None);
-        deck.addCard(card);
+        Card stoat = new Card.Builder()
+                .withName("Stoat")
+                .withHealth(3)
+                .withPower(1)
+                .withCostType(CostType.Blood)
+                .withCost(1)
+                .withTribe(Tribe.None)
+                .build();
+        deck.addCard(stoat);
         Board board = new Board(deck);
-        Card expected = new Card("Stoat", 2, 1, CostType.Blood, 1, Tribe.None);
+        Card expected = new Card.Builder()
+                .withName("Stoat")
+                .withHealth(3)
+                .withPower(1)
+                .withCostType(CostType.Blood)
+                .withCost(1)
+                .withTribe(Tribe.None)
+                .build();
         // Act
-        board.drawFromDeck(0);
+        board.drawSpecificCardFromDeck(0);
         Card actual = board.getHand().get(0);
         // Assert
         assertEquals(expected, actual);
     }
 
     @Test
-    public void drawSquirrel_valid_shouldReturnSquirrelInHand() {
+    public void drawSquirrel_valid_shouldReturnSquirrelInHand() throws InvalidCardException, InvalidBoardException {
         // Arrange
         Board board = new Board();
-        Card expected = new Card("Squirrel", 1, 0, CostType.None, 0, Tribe.Squirrel);
+        Card expected = new Card.Builder()
+                .withName("Squirrel")
+                .withHealth(1)
+                .withPower(0)
+                .withTribe(Tribe.Squirrel)
+                .withCost(0)
+                .build();
         // Act
         board.drawSquirrel();
         Card actual = board.getHand().get(0);
@@ -95,11 +115,23 @@ class BoardTest {
     }
 
     @Test
-    public void placeCard_valid_shouldReturnSquirrelInCorrectSlotOnBoard() {
+    public void placeCard_valid_shouldReturnSquirrelInCorrectSlotOnBoard() throws InvalidCardException {
         // Arrange
         Board board = new Board();
-        Card squirrel = new Card("Squirrel", 1, 0, CostType.None, 0, Tribe.Squirrel);
-        Card expected = new Card("Squirrel", 1, 0, CostType.None, 0, Tribe.Squirrel);
+        Card squirrel = new Card.Builder()
+                .withName("Squirrel")
+                .withHealth(1)
+                .withPower(0)
+                .withTribe(Tribe.Squirrel)
+                .withCost(0)
+                .build();
+        Card expected = new Card.Builder()
+                .withName("Squirrel")
+                .withHealth(1)
+                .withPower(0)
+                .withTribe(Tribe.Squirrel)
+                .withCost(0)
+                .build();
         // Act
         try {
             board.placePlayerCard(squirrel, 2);
@@ -110,5 +142,5 @@ class BoardTest {
         // Assert
         assertEquals(expected, actual);
 
-    }*/
+    }
 }

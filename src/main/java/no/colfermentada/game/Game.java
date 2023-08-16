@@ -5,14 +5,16 @@ import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.CostType;
 import no.colfermentada.cards.Sigil;
+import no.colfermentada.utils.CardDisplayer;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Game {
-    protected Board board;
-    protected int score;
-    protected int bones;
+    private Board board;
+    private int score;
+    private int bones;
+
 
     public Game(Board board) {
         this.board = board;
@@ -20,18 +22,35 @@ public class Game {
         bones = 0;
     }
 
-    /*public String displayBoard() {
-        return "Approaching: \n" +
-                board.displayCards(board.getApproachingCards()) +
-                "Opposing: \n" +
-                board.displayCards(board.getOpposingCards()) +
-                "Played: \n" +
-                board.displayCards(board.getPlayedCards()) +
-                "Hand: \n" +
-                board.displayCards(board.getHand()) +
-                "Score: " + score +
-                "\tBones: " + bones;
-    }*/
+    public String displayGame() {
+        StringBuilder result = new StringBuilder(board.displayBoard());
+        result.append("Score: ").append(score).append("\nBones: ").append(bones).append("\n");
+        return result.toString();
+    }
+
+    protected void increaseScore(int amount) {
+        score += amount;
+    }
+
+    protected void decreaseScore(int amount) {
+        score -= amount;
+    }
+
+    public boolean gameWon() {
+        return score >= 5;
+    }
+
+    public boolean gameLost() {
+        return score <= -5;
+    }
+
+    protected void increaseBones(int amount) {
+        bones += amount;
+    }
+
+    protected void decreaseBones(int amount) {
+        bones -= amount;
+    }
 
     // Play card method for free or bones CostTypes
     public void playCard(int cardIndex, int slot) throws InvalidMoveException {

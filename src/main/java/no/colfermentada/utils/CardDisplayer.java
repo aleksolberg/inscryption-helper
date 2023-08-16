@@ -1,11 +1,11 @@
-package no.colfermentada.board;
+package no.colfermentada.utils;
 
 import no.colfermentada.cards.Card;
 
 import java.util.ArrayList;
 import java.util.function.Function;
 
-public class BoardDisplayer {
+public class CardDisplayer {
     private String buildHeaderOrFooterRow(int cardCount) {
         StringBuilder builder = new StringBuilder();
         builder.append("+");
@@ -48,5 +48,23 @@ public class BoardDisplayer {
         builder.append("\n").append(buildHeaderOrFooterRow(cards.length)).append("\n");
 
         return builder.toString();
+    }
+
+    public String displayCard(Card card) {
+        return buildDisplayString(new Card[]{card});
+    }
+
+    public String displayCards(Iterable<Card> cards) {
+        // Convert iterable to an array (for simplicity and consistency)
+        Card[] cardArray = toArray(cards);
+        return buildDisplayString(cardArray);
+    }
+
+    private Card[] toArray(Iterable<Card> cards) {
+        ArrayList<Card> cardList = new ArrayList<>();
+        for (Card card : cards) {
+            cardList.add(card);
+        }
+        return cardList.toArray(new Card[0]);
     }
 }

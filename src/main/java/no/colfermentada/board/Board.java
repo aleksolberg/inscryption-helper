@@ -5,11 +5,12 @@ import no.colfermentada.cards.InvalidCardException;
 import no.colfermentada.cards.Tribe;
 import no.colfermentada.deck.Deck;
 import no.colfermentada.deck.InvalidDeckException;
+import no.colfermentada.utils.CardDisplayer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Board {
-    // TODO: Actually handle exceptions earlier
     private static final int NUM_SLOTS = 4;
     private Card[] playedCards;
     private Card[] opposingCards;
@@ -18,8 +19,7 @@ public class Board {
     private ArrayList<Card> hand;
     private ArrayList<Card> squirrelDeck;
     private ArrayList<Card> discardedPile;
-    private BoardDisplayer displayer = new BoardDisplayer();
-
+    private CardDisplayer displayer;
 
     public Board(Deck deck) throws InvalidCardException {
         playedCards = new Card[NUM_SLOTS];
@@ -29,13 +29,20 @@ public class Board {
         hand = new ArrayList<Card>();
         this.deck = deck;
 
-        Card squirrel = new Card.Builder().withName("Squirrel").withHealth(1).withPower(0).withTribe(Tribe.Squirrel).withCost(0).build();
+        Card squirrel = new Card.Builder()
+                .withName("Squirrel")
+                .withHealth(1)
+                .withPower(0)
+                .withTribe(Tribe.Squirrel)
+                .withCost(0)
+                .build();
         squirrelDeck = new ArrayList<Card>();
         for (int i = 0; i <= 10; i++) {
             squirrelDeck.add(squirrel.clone());
         }
 
         discardedPile = new ArrayList<Card>();
+        displayer = new CardDisplayer();
     }
 
     public Board() throws InvalidCardException {
@@ -111,76 +118,21 @@ public class Board {
     }
 
     public String displayCards(ArrayList<Card> cards) {
-        return displayer.buildDisplayString(cards.toArray(new Card[0]));
+        return displayer.displayCards(cards);
     }
 
     public String displayCards(Card[] cards) {
-        return displayer.buildDisplayString(cards);
+        return displayer.displayCards(Arrays.asList(cards));
     }
 
-    /*public String displayCards(ArrayList<Card> cards) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("+");
-        for (Card card : cards) {
-            builder.append("--------+");
-        }
-        builder.append("\n|");
-        for (Card card : cards) {
-            builder.append(String.format("%1$" + 8 + "s", card.getShortName())).append("|");
-        }
-        builder.append("\n|");
-        for (Card card : cards) {
-            builder.append(String.format("%1$" + 4 + "s" + "%2$" + 4 + "s", card.getShortTribe(), card.getCostString())).append("|");
-        }
-        builder.append("\n|");
-        for (Card card : cards) {
-            builder.append(String.format("%1$" + 4 + "s" + "%2$" + 4 + "s", card.getPower(), card.getCurrentHealth())).append("|");
-        }
-        builder.append("\n+");
-        for (Card card : cards) {
-            builder.append("--------+");
-        }
-        builder.append("\n");
-
-        return builder.toString();
+    public String displayBoard() {
+        return "Approaching: \n" +
+                displayer.displayCards(Arrays.asList(approachingCards)) +
+                "Opposing: \n" +
+                displayer.displayCards(Arrays.asList(opposingCards)) +
+                "Played: \n" +
+                displayer.displayCards(Arrays.asList(playedCards)) +
+                "Hand: \n" +
+                displayer.displayCards(hand);
     }
-
-    public String displayCards(Card[] cards) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("+");
-        for (Card card : cards) {
-            builder.append("--------+");
-        }
-        builder.append("\n|");
-        for (Card card : cards) {
-            if (card == null){
-                builder.append("        |");
-            } else {
-                builder.append(String.format("%1$" + 8 + "s", card.getShortName())).append("|");
-            }
-        }
-        builder.append("\n|");
-        for (Card card : cards) {
-            if (card == null) {
-                builder.append("        |");
-            } else {
-                builder.append(String.format("%1$" + 4 + "s" + "%2$" + 4 + "s", card.getShortTribe(), card.getCostString())).append("|");
-            }
-        }
-        builder.append("\n|");
-        for (Card card : cards) {
-            if (card == null) {
-                builder.append("        |");
-            } else {
-                builder.append(String.format("%1$" + 4 + "s" + "%2$" + 4 + "s", card.getPower(), card.getCurrentHealth())).append("|");
-            }
-        }
-        builder.append("\n+");
-        for (Card card : cards) {
-            builder.append("--------+");
-        }
-        builder.append("\n");
-
-        return builder.toString();
-    }*/
 }

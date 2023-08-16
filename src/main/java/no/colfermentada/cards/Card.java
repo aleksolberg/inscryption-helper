@@ -1,5 +1,6 @@
 package no.colfermentada.cards;
 
+import no.colfermentada.utils.CardDisplayer;
 import no.colfermentada.utils.CardUtils;
 
 import java.util.EnumSet;
@@ -15,6 +16,7 @@ public class Card implements Cloneable {
     private int cost;
     private Tribe tribe;
     private EnumSet<Sigil> sigils;
+    private CardDisplayer displayer;
 
     private Card(Builder builder) {
         this.name = builder.name;
@@ -26,6 +28,7 @@ public class Card implements Cloneable {
         this.cost = builder.cost;
         this.tribe = builder.tribe;
         this.sigils = builder.sigils;
+        displayer = new CardDisplayer();
     }
 
     public static class Builder {
@@ -187,5 +190,9 @@ public class Card implements Cloneable {
 
     public void resetCard() {
         currentHealth = health;
+    }
+
+    public String displayCard() {
+        return displayer.displayCard(this);
     }
 }

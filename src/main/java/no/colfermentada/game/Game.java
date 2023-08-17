@@ -7,10 +7,11 @@ import no.colfermentada.cards.CostType;
 import no.colfermentada.cards.InvalidCardException;
 import no.colfermentada.cards.Sigil;
 import no.colfermentada.deck.Deck;
+import no.colfermentada.utils.Rules;
 
 import java.util.ArrayList;
 
-public class Game {
+public class Game {// Question: The game should have players, not the other way around??
     private Board board;
     private int score;
     private int bones;
@@ -39,9 +40,7 @@ public class Game {
     }
 
     public String displayGame() {
-        StringBuilder result = new StringBuilder(board.displayBoard());
-        result.append("Score: ").append(score).append("\nBones: ").append(bones).append("\n");
-        return result.toString();
+        return board.displayBoard() + "Score: " + score + "\nBones: " + bones + "\n";
     }
 
     protected void increaseScore(int amount) {
@@ -66,29 +65,6 @@ public class Game {
 
     public void decreaseBones(int amount) {
         bones -= amount;
-    }
-
-    public ArrayList<Integer> getAttackedSlots(Card card, int slot) {
-        ArrayList<Integer> attackedSlots = new ArrayList<>();
-
-        if (card.getSigils().contains(Sigil.BifurcatedStrike)) {
-            for (int offset : new int[]{-1, 1}) {
-                int targetSlot = slot + offset;
-                if (targetSlot >= 0 && targetSlot < 4) {
-                    attackedSlots.add(targetSlot);
-                }
-            }
-        } else if (card.getSigils().contains(Sigil.TrifurcatedStrike)) {
-            for (int offset : new int[]{-1, 0, 1}) {
-                int targetSlot = slot + offset;
-                if (targetSlot >= 0 && targetSlot < 4) {
-                    attackedSlots.add(targetSlot);
-                }
-            }
-        } else {
-            attackedSlots.add(slot);
-        }
-        return attackedSlots;
     }
 
     public boolean attacksScore(Card attackingCard, Card attackedCard) {
@@ -119,7 +95,7 @@ public class Game {
             Card attackingCard = board.getPlayedCards()[slot];
             if (attackingCard != null) {
                 // There is a card at slot
-                ArrayList<Integer> attackedSlots = getAttackedSlots(attackingCard, slot);
+                ArrayList<Integer> attackedSlots = Rules.getAttackedSlots(attackingCard, slot);
                 for (Integer i : attackedSlots) {
                     Card attackedCard = board.getOpposingCards()[i];
                     if (attacksScore(attackingCard, attackedCard)) {
@@ -140,7 +116,7 @@ public class Game {
             Card attackingCard = board.getOpposingCards()[slot];
             if (attackingCard != null) {
                 // There is a card at slot
-                ArrayList<Integer> attackedSlots = getAttackedSlots(attackingCard, slot);
+                ArrayList<Integer> attackedSlots = Rules.getAttackedSlots(attackingCard, slot);
                 for (Integer i : attackedSlots) {
                     Card attackedCard = board.getPlayedCards()[i];
                     if (attacksScore(attackingCard, attackedCard)) {
@@ -154,5 +130,11 @@ public class Game {
                 }
             }
         }
+    }
+
+    public void executeTurn() {
+        playerAttacks();
+        board.opponentCardsApproaches();
+        opponentAttacks();
     }
 }

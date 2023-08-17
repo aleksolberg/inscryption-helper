@@ -9,6 +9,7 @@ import no.colfermentada.utils.CardDisplayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Board {
     private static final int NUM_SLOTS = 4;
@@ -115,5 +116,22 @@ public class Board {
                 displayer.displayCards(Arrays.asList(opposingCards)) +
                 "Played: \n" +
                 displayer.displayCards(Arrays.asList(playedCards));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return Arrays.equals(playedCards, board.playedCards) && Arrays.equals(opposingCards, board.opposingCards) && Arrays.equals(approachingCards, board.approachingCards) && Objects.equals(squirrelDeck, board.squirrelDeck) && Objects.equals(discardedPile, board.discardedPile);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(squirrelDeck, discardedPile, displayer);
+        result = 31 * result + Arrays.hashCode(playedCards);
+        result = 31 * result + Arrays.hashCode(opposingCards);
+        result = 31 * result + Arrays.hashCode(approachingCards);
+        return result;
     }
 }

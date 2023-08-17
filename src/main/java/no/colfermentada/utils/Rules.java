@@ -3,7 +3,10 @@ package no.colfermentada.utils;
 import no.colfermentada.board.Board;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.CostType;
+import no.colfermentada.cards.Sigil;
 import no.colfermentada.game.InvalidMoveException;
+
+import java.util.ArrayList;
 
 public final class Rules {
     public static boolean validateMoveBloodCostType(Board board, Card card, int slot, int[] sacrifices) throws InvalidMoveException {
@@ -67,5 +70,28 @@ public final class Rules {
             throw new InvalidMoveException("Slot not empty");
         }
         return true;
+    }
+
+    public static ArrayList<Integer> getAttackedSlots(Card card, int slot) {
+        ArrayList<Integer> attackedSlots = new ArrayList<>();
+
+        if (card.getSigils().contains(Sigil.BifurcatedStrike)) {
+            for (int offset : new int[]{-1, 1}) {
+                int targetSlot = slot + offset;
+                if (targetSlot >= 0 && targetSlot < 4) {
+                    attackedSlots.add(targetSlot);
+                }
+            }
+        } else if (card.getSigils().contains(Sigil.TrifurcatedStrike)) {
+            for (int offset : new int[]{-1, 0, 1}) {
+                int targetSlot = slot + offset;
+                if (targetSlot >= 0 && targetSlot < 4) {
+                    attackedSlots.add(targetSlot);
+                }
+            }
+        } else {
+            attackedSlots.add(slot);
+        }
+        return attackedSlots;
     }
 }

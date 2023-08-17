@@ -7,6 +7,7 @@ import no.colfermentada.deck.Deck;
 import no.colfermentada.deck.InvalidDeckException;
 import no.colfermentada.game.Game;
 import no.colfermentada.game.InvalidMoveException;
+import no.colfermentada.utils.CardDisplayer;
 import no.colfermentada.utils.Rules;
 
 import java.util.ArrayList;
@@ -16,11 +17,13 @@ public class Player {
     private Game game;
     private ArrayList<Card> hand;
     private Deck deck;
+    private CardDisplayer displayer;
 
     public Player(Game game, Deck deck) {
         this.game = game;
         hand = new ArrayList<>();
         this.deck = deck;
+        displayer = new CardDisplayer();
     }
 
     public Game getGame() {
@@ -35,6 +38,10 @@ public class Player {
         return deck;
     }
 
+    public String displayHand() {
+        return displayer.displayCards(hand);
+    }
+
     public void drawSpecificCardFromDeck(int index) throws InvalidDeckException {
         if (index >= deck.currentSize()) {
             throw new InvalidDeckException("Index of deck out of bounds");
@@ -47,45 +54,31 @@ public class Player {
         hand.add(game.getBoard().drawSquirrel());
     }
 
-    public void playCard(int cardIndex, int slot, Optional<int[]> sacrifices) throws InvalidMoveException {
+    public void playCard(int cardIndex, int slot, int[] sacrifices) throws InvalidMoveException {
         Card card = hand.get(cardIndex);
         CostType costType = card.getCostType();
-        int cost = card.getCost();
 
         switch (costType) {
-            case Blood:
-                if (Rules.validateMoveBloodCostType(game.getBoard(), card, slot, sacrifices.orElse(new int[0]))){
-                    for (int sacrificeSlot : sacrifices.orElse(new int[0])) {
+            case Blood -> {
+                if (sacrifices != null && Rules.validateMoveBloodCostType(game.getBoard(), card, slot, sacrifices)) {
+                    for (int sacrificeSlot : sacrifices) {
                         game.getBoard().discardCardInSlot(sacrificeSlot);
-                        try {
-                            game.getBoard().placePlayerCard(hand.remove(cardIndex), slot);
-                        } catch (InvalidBoardException e) {
-                            throw new InvalidMoveException(e.getMessage());
-                        }
                     }
                 }
-                break;
-            case Bones:
+            }
+            case Bones -> {
                 if (Rules.validateMoveBonesCostType(game.getBoard(), card, slot, game.getBones())) {
                     game.decreaseBones(card.getCost());
-                    try {
-                        game.getBoard().placePlayerCard(hand.remove(cardIndex), slot);
-                    } catch (InvalidBoardException e) {
-                        throw new InvalidMoveException(e.getMessage());
-                    }
                 }
-                break;
-            case None:
-                if (Rules.validateMoveFreeCost(game.getBoard(), card, slot)) {
-                    try {
-                        game.getBoard().placePlayerCard(hand.remove(cardIndex), slot);
-                    } catch (InvalidBoardException e) {
-                        throw new InvalidMoveException(e.getMessage());
-                    }
-                }
-                break;
-            default:
-                throw new InvalidMoveException("Unknown cost type");
+            }
+            case None -> Rules.validateMoveFreeCost(game.getBoard(), card, slot);
+            default -> throw new InvalidMoveException("Unknown cost type");
+        }
+
+        try {
+            game.getBoard().placePlayerCard(hand.remove(cardIndex), slot);
+        } catch (InvalidBoardException e) {
+            throw new InvalidMoveException(e.getMessage());
         }
     }
 
@@ -93,7 +86,11 @@ public class Player {
         playCard(cardIndex, slot, null);
     }
 
-    public void endTurn() {
+    public void playCard(int cardIndex, int slot, int sacrifice) throws InvalidMoveException {
+        playCard(cardIndex, slot, new int[]{sacrifice});
+    }
 
+    public void endTurn() {
+        game.executeTurn();
     }
 }

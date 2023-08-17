@@ -86,6 +86,5 @@ class DeckTest {
         ArrayList<Card> actual = deck.getCurrentCards();
         // Assert
         assertEquals(expected, actual);
-
     }
 }

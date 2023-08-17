@@ -1,13 +1,16 @@
 package no.colfermentada.deck;
 
 import no.colfermentada.cards.*;
+import no.colfermentada.utils.CardDisplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+// TODO: add displayer to Deck class
 public class Deck {
     private ArrayList<Card> currentCards;
     private ArrayList<Card> permanentCards;
+    private CardDisplayer displayer;
 
     public Deck() {
         currentCards = new ArrayList<Card>();
@@ -107,5 +110,9 @@ public class Deck {
     public void reset () {
         currentCards.clear();
         currentCards.addAll(permanentCards);
+    }
+
+    public String displayDeck() {
+        return displayer.displayCards(permanentCards);
     }
 }

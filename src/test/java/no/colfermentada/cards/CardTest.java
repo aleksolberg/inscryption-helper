@@ -135,6 +135,7 @@ class CardTest {
         assertTrue(expected.equals(actual));
     }
 
+    @Test
     public void cloneCard_validCard_shouldReturnSameCard() {
         // Arrange
         String name = "Bloodhound";
@@ -158,9 +159,10 @@ class CardTest {
         } catch (InvalidCardException e) {
             throw new RuntimeException(e);
         }
+
         Card expected = null;
         try {
-            card = new Card.Builder()
+            expected = new Card.Builder()
                     .withName(name)
                     .withHealth(health)
                     .withPower(power)
@@ -209,6 +211,51 @@ class CardTest {
                 "+--------+\n";
         // Act
         String actual = card.displayCard();
+        // Assert
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void resetCard_validCard_shouldReturnCorrectCard() {
+        // Arrange
+        String name = "Bloodhound";
+        int health = 3;
+        int power = 2;
+        CostType costType = CostType.Blood;
+        int cost = 2;
+        Tribe tribe = Tribe.Canine;
+        Sigil sigil = Sigil.Guardian;
+        Card expected = null;
+        try {
+            expected = new Card.Builder()
+                    .withName(name)
+                    .withHealth(health)
+                    .withPower(power)
+                    .withCostType(costType)
+                    .withCost(cost)
+                    .withTribe(tribe)
+                    .withSigil(sigil)
+                    .build();
+        } catch (InvalidCardException e) {
+            throw new RuntimeException(e);
+        }
+        // Act
+        Card actual = null;
+        try {
+            actual = new Card.Builder()
+                    .withName(name)
+                    .withHealth(health)
+                    .withPower(power)
+                    .withCostType(costType)
+                    .withCost(cost)
+                    .withTribe(tribe)
+                    .withSigil(sigil)
+                    .build();
+        } catch (InvalidCardException e) {
+            throw new RuntimeException(e);
+        }
+        actual.takeDamage(2);
+        actual.resetCard();
         // Assert
         assertEquals(expected, actual);
     }

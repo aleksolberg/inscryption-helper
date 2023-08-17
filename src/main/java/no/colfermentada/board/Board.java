@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class Board {
-    private static final int NUM_SLOTS = 4;
+    public static final int NUM_SLOTS = 4;
     private Card[] playedCards;
     private Card[] opposingCards;
     private Card[] approachingCards;

@@ -1,12 +1,9 @@
 package no.colfermentada.game;
 
 import no.colfermentada.board.Board;
-import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.Card;
-import no.colfermentada.cards.CostType;
 import no.colfermentada.cards.InvalidCardException;
 import no.colfermentada.cards.Sigil;
-import no.colfermentada.deck.Deck;
 import no.colfermentada.utils.Rules;
 
 import java.util.ArrayList;
@@ -39,6 +36,14 @@ public class Game {// Question: The game should have players, not the other way 
         return bones;
     }
 
+    public boolean gameWon() {
+        return score >= 5;
+    }
+
+    public boolean gameLost() {
+        return score <= -5;
+    }
+
     public String displayGame() {
         return board.displayBoard() + "Score: " + score + "\nBones: " + bones + "\n";
     }
@@ -51,14 +56,6 @@ public class Game {// Question: The game should have players, not the other way 
         score -= amount;
     }
 
-    public boolean gameWon() {
-        return score >= 5;
-    }
-
-    public boolean gameLost() {
-        return score <= -5;
-    }
-
     public void increaseBones(int amount) {
         bones += amount;
     }
@@ -67,7 +64,7 @@ public class Game {// Question: The game should have players, not the other way 
         bones -= amount;
     }
 
-    public boolean attacksScore(Card attackingCard, Card attackedCard) {
+    public boolean isScoreAttacked(Card attackingCard, Card attackedCard) {
         if (attackedCard == null || attackedCard.getSigils().contains(Sigil.WaterBorne)) {
             return true;
         }
@@ -78,12 +75,12 @@ public class Game {// Question: The game should have players, not the other way 
         }
     }
 
-    public void playerAttacksScore(Card attackingCard) {
-        score += attackingCard.getPower();
-    }
-
-    public void opponentAttacksScore(Card attackingCard) {
-        score -= attackingCard.getPower();
+    public void attackScore(Card attackingCard, boolean isPlayer) {
+        int power = attackingCard.getPower();
+        if (!isPlayer) {
+            power = -power;
+        }
+        score += power;
     }
 
     public void attackCard(Card attackingCard, Card attackedCard) {
@@ -91,15 +88,15 @@ public class Game {// Question: The game should have players, not the other way 
     }
 
     public void playerAttacks() {
-        for (int slot = 0; slot < 4; slot++) {
+        for (int slot = 0; slot < Board.NUM_SLOTS; slot++) {
             Card attackingCard = board.getPlayedCards()[slot];
             if (attackingCard != null) {
                 // There is a card at slot
                 ArrayList<Integer> attackedSlots = Rules.getAttackedSlots(attackingCard, slot);
                 for (Integer i : attackedSlots) {
                     Card attackedCard = board.getOpposingCards()[i];
-                    if (attacksScore(attackingCard, attackedCard)) {
-                        playerAttacksScore(attackingCard);
+                    if (isScoreAttacked(attackingCard, attackedCard)) {
+                        attackScore(attackingCard, true);
                     } else {
                         attackCard(attackingCard, attackedCard);
                         if (attackedCard.isDead()) {
@@ -112,15 +109,15 @@ public class Game {// Question: The game should have players, not the other way 
     }
 
     public void opponentAttacks() {
-        for (int slot = 0; slot < 4; slot++) {
+        for (int slot = 0; slot < Board.NUM_SLOTS; slot++) {
             Card attackingCard = board.getOpposingCards()[slot];
             if (attackingCard != null) {
                 // There is a card at slot
                 ArrayList<Integer> attackedSlots = Rules.getAttackedSlots(attackingCard, slot);
                 for (Integer i : attackedSlots) {
                     Card attackedCard = board.getPlayedCards()[i];
-                    if (attacksScore(attackingCard, attackedCard)) {
-                        opponentAttacksScore(attackingCard);
+                    if (isScoreAttacked(attackingCard, attackedCard)) {
+                        attackScore(attackingCard, false);
                     } else {
                         attackCard(attackingCard, attackedCard);
                         if (attackedCard.isDead()) {

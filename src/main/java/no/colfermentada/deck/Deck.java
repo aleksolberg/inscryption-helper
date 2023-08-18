@@ -6,7 +6,6 @@ import no.colfermentada.utils.CardDisplayer;
 import java.util.ArrayList;
 import java.util.Collections;
 
-// TODO: add displayer to Deck class
 public class Deck {
     private ArrayList<Card> currentCards;
     private ArrayList<Card> permanentCards;
@@ -15,11 +14,13 @@ public class Deck {
     public Deck() {
         currentCards = new ArrayList<Card>();
         permanentCards = new ArrayList<Card>();
+        displayer = new CardDisplayer();
     }
 
     public Deck(ArrayList<Card> cards) {
         this.currentCards = new ArrayList<>(cards);
         this.permanentCards = new ArrayList<>(cards);
+        displayer = new CardDisplayer();
     }
 
     public ArrayList<Card> getCurrentCards() {
@@ -30,41 +31,11 @@ public class Deck {
         return permanentCards;
     }
 
-    public void populateStandardDeck() throws InvalidCardException {
-        Card stoat = new Card.Builder()
-                .withName("Stoat")
-                .withHealth(3)
-                .withPower(1)
-                .withCostType(CostType.Blood)
-                .withCost(1)
-                .withTribe(Tribe.None)
-                .build();
-        Card stuntedWolf = new Card.Builder()
-                .withName("Stunted Wolf")
-                .withHealth(2)
-                .withPower(2)
-                .withCostType(CostType.Blood)
-                .withCost(1)
-                .withTribe(Tribe.Canine)
-                .build();
-        Card stinkbug = new Card.Builder()
-                .withName("Stinkbug")
-                .withHealth(2)
-                .withPower(1)
-                .withCostType(CostType.Bones)
-                .withCost(2)
-                .withTribe(Tribe.Insect)
-                .withSigil(Sigil.Stinky)
-                .build();
-        Card bullfrog = new Card.Builder()
-                .withName("Bullfrog")
-                .withHealth(2)
-                .withPower(1)
-                .withCostType(CostType.Blood)
-                .withCost(1)
-                .withTribe(Tribe.Reptile)
-                .withSigil(Sigil.MightyLeap)
-                .build();
+    public void populateStandardDeck() {
+        Card stoat = CardTemplate.createStoat();
+        Card stuntedWolf = CardTemplate.createStuntedWolf();
+        Card stinkbug = CardTemplate.createStinkbug();
+        Card bullfrog = CardTemplate.createBullfrog();
 
         Collections.addAll(currentCards, stoat, stuntedWolf, stinkbug, bullfrog);
     }
@@ -88,6 +59,15 @@ public class Deck {
         permanentCards.remove(card);
     }
 
+    public boolean containsCard(Card card) {
+        for (Card cardInDeck : currentCards) {
+            if (card == cardInDeck) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int currentSize() {
         return currentCards.size();
     }
@@ -100,19 +80,28 @@ public class Deck {
         Collections.shuffle(currentCards);
     }
 
-    public Card drawSpecificCard(int index) throws InvalidDeckException {
+    public Card drawSpecificCardByIndex(int index) throws InvalidDeckException {
         if (currentCards.isEmpty()) {
             throw new InvalidDeckException("Cannot draw card from empty deck");
         }
         return currentCards.remove(index);
     }
 
-    public void reset () {
+    public  Card drawSpecificCardByCard(Card card) throws InvalidDeckException {
+        if (containsCard(card)) {
+            currentCards.remove(card);
+            return card;
+        } else {
+            throw new InvalidDeckException("Card not in deck");
+        }
+    }
+
+    public void resetDeck () {
         currentCards.clear();
         currentCards.addAll(permanentCards);
     }
 
-    public String displayDeck() {
+    public String displayPermanentDeck() {
         return displayer.displayCards(permanentCards);
     }
 }

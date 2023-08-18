@@ -1,29 +1,51 @@
 package no.colfermentada.game;
 
 import no.colfermentada.board.Board;
+import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.InvalidCardException;
 import no.colfermentada.cards.Sigil;
+import no.colfermentada.deck.Deck;
+import no.colfermentada.deck.InvalidDeckException;
+import no.colfermentada.players.Player;
 import no.colfermentada.utils.Rules;
 
 import java.util.ArrayList;
 
-public class Game {// Question: The game should have players, not the other way around??
+public class Game implements Cloneable{
+    private Player player;
     private Board board;
     private int score;
     private int bones;
 
 
-    public Game(Board board) {
-        this.board = board;
+    public Game(Deck deck) {
+        player = new Player(deck);
+        board = new Board();
         score = 0;
         bones = 0;
+    }
+
+    public Game(Board board) {
+        this(new Deck());
     }
 
     public Game() throws InvalidCardException {
         this(new Board());
     }
 
+    @Override
+    public Game clone() throws CloneNotSupportedException {
+        try {
+            return (Game) super.clone();  // Cast the result to Card
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Cannot clone Game", e);
+        }
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
     public Board getBoard() {
         return board;
     }
@@ -45,7 +67,7 @@ public class Game {// Question: The game should have players, not the other way 
     }
 
     public String displayGame() {
-        return board.displayBoard() + "Score: " + score + "\nBones: " + bones + "\n";
+        return board.displayBoard() + player.displayHand() + "Score: " + score + "\nBones: " + bones + "\n";
     }
 
     protected void increaseScore(int amount) {
@@ -64,14 +86,19 @@ public class Game {// Question: The game should have players, not the other way 
         bones -= amount;
     }
 
-    public boolean isScoreAttacked(Card attackingCard, Card attackedCard) {
-        if (attackedCard == null || attackedCard.getSigils().contains(Sigil.WaterBorne)) {
-            return true;
+    public void playerDrawsSquirrel() {
+        try {
+            player.receiveCardInHand(board.drawSquirrel());
+        } catch (InvalidBoardException e) {
+            System.out.println(e.getMessage());
         }
-        if (attackingCard.getSigils().contains(Sigil.Airborne)) {
-            return !attackedCard.getSigils().contains(Sigil.MightyLeap);
-        } else {
-            return false;
+    }
+
+    public void playerDrawsFromDeckByIndex(int index) {
+        try {
+            player.drawSpecificCardFromDeckByIndex(index);
+        } catch (InvalidDeckException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -95,7 +122,7 @@ public class Game {// Question: The game should have players, not the other way 
                 ArrayList<Integer> attackedSlots = Rules.getAttackedSlots(attackingCard, slot);
                 for (Integer i : attackedSlots) {
                     Card attackedCard = board.getOpposingCards()[i];
-                    if (isScoreAttacked(attackingCard, attackedCard)) {
+                    if (Rules.isScoreAttacked(attackingCard, attackedCard)) {
                         attackScore(attackingCard, true);
                     } else {
                         attackCard(attackingCard, attackedCard);
@@ -116,7 +143,7 @@ public class Game {// Question: The game should have players, not the other way 
                 ArrayList<Integer> attackedSlots = Rules.getAttackedSlots(attackingCard, slot);
                 for (Integer i : attackedSlots) {
                     Card attackedCard = board.getPlayedCards()[i];
-                    if (isScoreAttacked(attackingCard, attackedCard)) {
+                    if (Rules.isScoreAttacked(attackingCard, attackedCard)) {
                         attackScore(attackingCard, false);
                     } else {
                         attackCard(attackingCard, attackedCard);

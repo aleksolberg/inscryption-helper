@@ -188,7 +188,7 @@ public class Card implements Cloneable {
         return currentHealth <= 0;
     }
 
-    public void resetCard() {
+    public void resetHealth() {
         currentHealth = health;
     }
 

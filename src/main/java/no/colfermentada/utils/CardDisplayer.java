@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.function.Function;
 
 public class CardDisplayer {
-    private String buildHeaderOrFooterRow(int cardCount) {
+    private static String buildHeaderOrFooterRow(int cardCount) {
         StringBuilder builder = new StringBuilder();
         builder.append("+");
         builder.append("--------+".repeat(Math.max(0, cardCount)));
         return builder.toString();
     }
 
-    private String displayCardAttribute(Card card, Function<Card, String> attributeFunction) {
+    private static String displayCardAttribute(Card card, Function<Card, String> attributeFunction) {
         return card == null ? "        " : String.format("%1$" + 8 + "s", attributeFunction.apply(card));
     }
 
-    public String buildDisplayString(Card[] cards) {
+    public static String buildDisplayString(Card[] cards) {
         StringBuilder builder = new StringBuilder();
 
         // Header
@@ -50,17 +50,17 @@ public class CardDisplayer {
         return builder.toString();
     }
 
-    public String displayCard(Card card) {
+    public static String displayCard(Card card) {
         return buildDisplayString(new Card[]{card});
     }
 
-    public String displayCards(Iterable<Card> cards) {
+    public static String displayCards(Iterable<Card> cards) {
         // Convert iterable to an array (for simplicity and consistency)
         Card[] cardArray = toArray(cards);
         return buildDisplayString(cardArray);
     }
 
-    private Card[] toArray(Iterable<Card> cards) {
+    private static Card[] toArray(Iterable<Card> cards) {
         ArrayList<Card> cardList = new ArrayList<>();
         for (Card card : cards) {
             cardList.add(card);

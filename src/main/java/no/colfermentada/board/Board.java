@@ -1,12 +1,11 @@
 package no.colfermentada.board;
 
 import no.colfermentada.cards.Card;
+import no.colfermentada.cards.CardTemplate;
 import no.colfermentada.cards.InvalidCardException;
-import no.colfermentada.cards.Tribe;
-import no.colfermentada.deck.Deck;
-import no.colfermentada.deck.InvalidDeckException;
 import no.colfermentada.utils.CardDisplayer;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -20,19 +19,14 @@ public class Board {
     private ArrayList<Card> discardedPile;
     private CardDisplayer displayer;
 
-    public Board() throws InvalidCardException {
+    public Board() {
         playedCards = new Card[NUM_SLOTS];
         opposingCards = new Card[NUM_SLOTS];
         approachingCards = new Card[NUM_SLOTS];
 
-        Card squirrel = new Card.Builder()
-                .withName("Squirrel")
-                .withHealth(1)
-                .withPower(0)
-                .withTribe(Tribe.Squirrel)
-                .withCost(0)
-                .build();
         squirrelDeck = new ArrayList<Card>();
+        Card squirrel = CardTemplate.createSquirrel();
+        squirrelDeck.add(squirrel);
         for (int i = 0; i <= 10; i++) {
             squirrelDeck.add(squirrel.clone());
         }
@@ -72,7 +66,7 @@ public class Board {
         }
     }
 
-    public void placeOpponentCard(Card card, int slot) throws InvalidBoardException {
+    public void placeApproachingCard(Card card, int slot) throws InvalidBoardException {
         if (slot >= NUM_SLOTS) {
             throw new InvalidBoardException("Card placed out of bounds");
         }
@@ -83,9 +77,36 @@ public class Board {
         }
     }
 
+    public void placeOpposingCard(Card card, int slot) throws InvalidBoardException {
+        if (slot >= NUM_SLOTS) {
+            throw new InvalidBoardException("Card placed out of bounds");
+        }
+        if (opposingCards[slot] == null) {
+            opposingCards[slot] = card;
+        } else {
+            throw new InvalidBoardException("Slot not empty");
+        }
+    }
+
+    private int playerSlotOf(Card card) throws InvalidBoardException {
+        for (int i = 0; i <= NUM_SLOTS; i++) {
+            if (card == playedCards[i]){
+                return i;
+            }
+        } throw new InvalidBoardException("Card not in played cards");
+    }
+
     public void discardCardInSlot(int slot) {
         discardedPile.add(playedCards[slot]);
         playedCards[slot] = null;
+    }
+
+    public void discardCardByCard(Card card) {
+        try {
+            discardCardInSlot(playerSlotOf(card));
+        } catch (InvalidBoardException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void removeOpposingCardInSlot(int slot) {
@@ -99,6 +120,16 @@ public class Board {
                 approachingCards[i] = null;
             }
         }
+    }
+
+    public ArrayList<Integer> playerSlotsWithCards() {
+        ArrayList<Integer> result = new ArrayList<>();
+        for (int slot = 0; slot < NUM_SLOTS; slot++) {
+            if (playedCards[slot] != null) {
+                result.add(slot);
+            }
+        }
+        return result;
     }
 
     public String displayCards(ArrayList<Card> cards) {

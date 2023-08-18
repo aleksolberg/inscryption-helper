@@ -21,21 +21,7 @@ class CardTest {
 
         String expected = new String("Bloodhound");
         // Act
-        Card card = null;
-        try {
-            card = new Card.Builder()
-                        .withName(name)
-                        .withShortName(shortName)
-                        .withHealth(health)
-                        .withPower(power)
-                        .withCostType(costType)
-                        .withCost(cost)
-                        .withTribe(tribe)
-                        .withSigil(sigil)
-                        .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
+        Card card = CardTemplate.createBloodhound();
         String actual = card.getName();
         // Assert
         assertEquals(expected, actual);
@@ -255,7 +241,7 @@ class CardTest {
             throw new RuntimeException(e);
         }
         actual.takeDamage(2);
-        actual.resetCard();
+        actual.resetHealth();
         // Assert
         assertEquals(expected, actual);
     }

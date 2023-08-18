@@ -24,10 +24,15 @@ public final class Rules {
 
         // Check if card is being placed in valid slot
         if (board.getPlayedCards()[slot] != null) {
+            boolean validSlot = false;
             for (int sacrificeSlot : sacrifices) {
-                if (sacrificeSlot != slot) {
-                    throw new InvalidMoveException("Slot not empty");
+                if (sacrificeSlot == slot) {
+                    validSlot = true;
+                    break;
                 }
+            }
+            if (!validSlot) {
+                throw new InvalidMoveException("Slot not empty");
             }
         }
 
@@ -93,5 +98,16 @@ public final class Rules {
             attackedSlots.add(slot);
         }
         return attackedSlots;
+    }
+
+    public static boolean isScoreAttacked(Card attackingCard, Card attackedCard) {
+        if (attackedCard == null || attackedCard.getSigils().contains(Sigil.WaterBorne)) {
+            return true;
+        }
+        if (attackingCard.getSigils().contains(Sigil.Airborne)) {
+            return !attackedCard.getSigils().contains(Sigil.MightyLeap);
+        } else {
+            return false;
+        }
     }
 }

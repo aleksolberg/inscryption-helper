@@ -13,6 +13,9 @@ class DeckTest {
         // Arrange
         Deck deck = new Deck();
         Card stoat = null;
+        Card stuntedWolf = null;
+        Card stinkbug = null;
+        Card bullfrog = null;
         try {
             stoat = new Card.Builder()
                     .withName("Stoat")
@@ -22,11 +25,7 @@ class DeckTest {
                     .withCost(1)
                     .withTribe(Tribe.None)
                     .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
-        Card stuntedWolf = null;
-        try {
+
             stuntedWolf = new Card.Builder()
                     .withName("Stunted Wolf")
                     .withHealth(2)
@@ -35,11 +34,7 @@ class DeckTest {
                     .withCost(1)
                     .withTribe(Tribe.Canine)
                     .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
-        Card stinkbug = null;
-        try {
+
             stinkbug = new Card.Builder()
                     .withName("Stinkbug")
                     .withHealth(2)
@@ -49,11 +44,7 @@ class DeckTest {
                     .withTribe(Tribe.Insect)
                     .withSigil(Sigil.Stinky)
                     .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
-        Card bullfrog = null;
-        try {
+
             bullfrog = new Card.Builder()
                     .withName("Bullfrog")
                     .withHealth(2)
@@ -66,11 +57,10 @@ class DeckTest {
         } catch (InvalidCardException e) {
             throw new RuntimeException(e);
         }
-
-        Card finalBullfrog = bullfrog;
-        Card finalStinkbug = stinkbug;
-        Card finalStuntedWolf = stuntedWolf;
         Card finalStoat = stoat;
+        Card finalStuntedWolf = stuntedWolf;
+        Card finalStinkbug = stinkbug;
+        Card finalBullfrog = bullfrog;
         ArrayList<Card> expected = new ArrayList<Card>(){{
             add(finalStoat);
             add(finalStuntedWolf);
@@ -78,11 +68,7 @@ class DeckTest {
             add(finalBullfrog);
         }};
         // Act
-        try {
-            deck.populateStandardDeck();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
+        deck.populateStandardDeck();
         ArrayList<Card> actual = deck.getCurrentCards();
         // Assert
         assertEquals(expected, actual);

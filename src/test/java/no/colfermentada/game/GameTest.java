@@ -4,13 +4,11 @@ import no.colfermentada.board.Board;
 import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.*;
 import no.colfermentada.deck.Deck;
-import no.colfermentada.deck.InvalidDeckException;
 import no.colfermentada.players.Player;
-import no.colfermentada.utils.CardDisplayer;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,150 +17,84 @@ class GameTest {
     public Card stuntedWolf;
     public Card stinkbug;
     public Card bullfrog;
+    public Card bloodhound;
     public Game game;
 
     @BeforeEach
     public void createCardsAndGame() throws InvalidBoardException, InvalidCardException {
-        try {
-            stoat = new Card.Builder()
-                    .withName("Stoat")
-                    .withHealth(3)
-                    .withPower(1)
-                    .withCostType(CostType.Blood)
-                    .withCost(1)
-                    .withTribe(Tribe.None)
-                    .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
+        stoat = CardTemplate.createStoat();
+        stuntedWolf = CardTemplate.createStuntedWolf();
+        stinkbug = CardTemplate.createStinkbug();
+        bullfrog = CardTemplate.createBullfrog();
+        bloodhound = CardTemplate.createBloodhound();
 
-        try {
-            stuntedWolf = new Card.Builder()
-                    .withName("Stunted Wolf")
-                    .withHealth(2)
-                    .withPower(2)
-                    .withCostType(CostType.Blood)
-                    .withCost(1)
-                    .withTribe(Tribe.Canine)
-                    .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
 
-        try {
-            stinkbug = new Card.Builder()
-                    .withName("Stinkbug")
-                    .withHealth(2)
-                    .withPower(1)
-                    .withCostType(CostType.Bones)
-                    .withCost(2)
-                    .withTribe(Tribe.Insect)
-                    .withSigil(Sigil.Stinky)
-                    .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
+        Deck deck = new Deck(new ArrayList<>(){{
+            add(bullfrog);
+            add(stinkbug);}});
 
-        try {
-            bullfrog = new Card.Builder()
-                    .withName("Bullfrog")
-                    .withHealth(2)
-                    .withPower(1)
-                    .withCostType(CostType.Blood)
-                    .withCost(1)
-                    .withTribe(Tribe.Reptile)
-                    .withSigil(Sigil.MightyLeap)
-                    .build();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
+        game = new Game(deck);
 
-        Board board = new Board();
+        game.getBoard().placePlayerCard(stoat, 1);
+        game.getBoard().placePlayerCard(stuntedWolf,3);
+        game.getBoard().placeOpposingCard(bloodhound, 1);
 
-        board.placePlayerCard(stoat, 1);
-        board.placePlayerCard(stuntedWolf,3);
-        board.placeOpponentCard(stinkbug,1);
-        board.placeOpponentCard(bullfrog,2);
 
-        game = new Game(board);
         game.getBoard().opponentCardsApproaches();
+        game.playerDrawsFromDeckByIndex(0);
     }
 
     @Test
     public void displayGame_fourCardsScoreThreeTwoBones_shouldReturnCorrectString() {
-        Deck deck = new Deck();
-        Board board = null;
-        try {
-            deck.populateStandardDeck();
-            board = new Board();
-        } catch (InvalidCardException e) {
-            throw new RuntimeException(e);
-        }
-        Game game = new Game(board);
-        Player player = new Player(game, deck);
-        try {
-            player.drawSpecificCardFromDeck(0);
-            player.drawSpecificCardFromDeck(0);
-            player.drawSpecificCardFromDeck(0);
-            player.drawSpecificCardFromDeck(0);
-        } catch (InvalidDeckException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            board.placePlayerCard(player.getHand().get(0), 2);
-            board.placeOpponentCard(player.getHand().get(0), 1);
-            board.opponentCardsApproaches();
-            board.placeOpponentCard(player.getHand().get(0), 2);
-            board.placePlayerCard(player.getHand().get(0), 3);
-        } catch (InvalidBoardException e) {
-            throw new RuntimeException(e);
-        }
-
         game.increaseScore(3);
         game.increaseBones(2);
 
         String expected = "Approaching: \n" +
                 "+--------+--------+--------+--------+\n" +
-                "|        |        |   Stoat|        |\n" +
-                "|        |        |  No 1Bl|        |\n" +
-                "|        |        |   1   3|        |\n" +
+                "|        |        |        |        |\n" +
+                "|        |        |        |        |\n" +
+                "|        |        |        |        |\n" +
                 "+--------+--------+--------+--------+\n" +
                 "Opposing: \n" +
                 "+--------+--------+--------+--------+\n" +
-                "|        |   Stoat|        |        |\n" +
-                "|        |  No 1Bl|        |        |\n" +
-                "|        |   1   3|        |        |\n" +
+                "|        |Bloodhnd|        |        |\n" +
+                "|        |  Ca 2Bl|        |        |\n" +
+                "|        |   2   3|        |        |\n" +
                 "+--------+--------+--------+--------+\n" +
                 "Played: \n" +
                 "+--------+--------+--------+--------+\n" +
-                "|        |        |   Stoat|   Stoat|\n" +
-                "|        |        |  No 1Bl|  No 1Bl|\n" +
-                "|        |        |   1   3|   1   3|\n" +
+                "|        |   Stoat|        |Stntd Wl|\n" +
+                "|        |  No 1Bl|        |  Ca 1Bl|\n" +
+                "|        |   1   3|        |   2   2|\n" +
                 "+--------+--------+--------+--------+\n" +
+                "Hand:\n" +
+                "+--------+\n" +
+                "|Bullfrog|\n" +
+                "|  Re 1Bl|\n" +
+                "|   1   2|\n" +
+                "+--------+\n" +
                 "Score: 3\n" +
                 "Bones: 2\n";
         // Act
         String actual = game.displayGame();
         // Assert
+        //System.out.println(actual);
+        //System.out.println(expected);
         assertEquals(expected, actual);
     }
 
     @Test
-    public void playerAttacks_attacksScoreAndOpposingCard_shouldReturnCorrectBoard() throws InvalidCardException, InvalidBoardException {
+    public void playerAttacks_attacksOpposingCard_shouldReturnCorrectBoard() throws InvalidCardException, InvalidBoardException {
         // Arrange
         Board expected = new Board();
         Card stoatClone = stoat.clone();
         Card stuntedWolfClone = stuntedWolf.clone();
-        Card stinkbugClone = stinkbug.clone();
-        Card bullfrogClone = bullfrog.clone();
-        stinkbugClone.takeDamage(1);
+        Card bloodhoundClone = bloodhound.clone();
+        bloodhoundClone.takeDamage(1);
 
         expected.placePlayerCard(stoatClone, 1);
         expected.placePlayerCard(stuntedWolfClone,3);
-        expected.placeOpponentCard(stinkbugClone,1);
-        expected.placeOpponentCard(bullfrogClone,2);
-        expected.opponentCardsApproaches();
+        expected.placeOpposingCard(bloodhoundClone, 1);
         // Act
         game.playerAttacks();
         Board actual = game.getBoard();
@@ -171,24 +103,44 @@ class GameTest {
     }
 
     @Test
-    public void executeTurn_attacksScoreAndOpposingCard_shouldReturnCorrectBoard() throws InvalidCardException, InvalidBoardException {
+    public void playerAttacks_attacksScore_shouldReturnCorrectScore() throws InvalidCardException, InvalidBoardException {
+        // Arrange
+        int expected = 2;
+        // Act
+        game.playerAttacks();
+        int actual = game.getScore();
+        // Assert
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void opponentAttacks_attacksOpposingCard_shouldReturnCorrectBoard() throws InvalidCardException, InvalidBoardException {
         // Arrange
         Board expected = new Board();
         Card stoatClone = stoat.clone();
         Card stuntedWolfClone = stuntedWolf.clone();
-        Card stinkbugClone = stinkbug.clone();
-        Card bullfrogClone = bullfrog.clone();
-        stinkbugClone.takeDamage(1);
-        stoatClone.takeDamage(1);
+        Card bloodhoundClone = bloodhound.clone();
+        stoatClone.takeDamage(2);
 
         expected.placePlayerCard(stoatClone, 1);
         expected.placePlayerCard(stuntedWolfClone,3);
-        expected.placeOpponentCard(stinkbugClone,1);
-        expected.placeOpponentCard(bullfrogClone,2);
-        expected.opponentCardsApproaches();
+        expected.placeOpposingCard(bloodhoundClone, 1);
         // Act
-        game.executeTurn();
+        game.opponentAttacks();
         Board actual = game.getBoard();
+        // Assert
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void opponentAttacks_attacksScore_shouldReturnCorrectScore() throws InvalidCardException, InvalidBoardException {
+        // Arrange
+        game.getBoard().discardCardByCard(stoat);
+
+        int expected = -2;
+        // Act
+        game.opponentAttacks();
+        int actual = game.getScore();
         // Assert
         assertEquals(expected, actual);
     }

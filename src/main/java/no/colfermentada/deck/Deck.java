@@ -2,6 +2,7 @@ package no.colfermentada.deck;
 
 import no.colfermentada.cards.*;
 import no.colfermentada.utils.CardDisplayer;
+import no.colfermentada.utils.CardUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +21,12 @@ public class Deck {
     public Deck(ArrayList<Card> cards) {
         this.currentCards = new ArrayList<>(cards);
         this.permanentCards = new ArrayList<>(cards);
+        displayer = new CardDisplayer();
+    }
+
+    public Deck(Deck other) {
+        this.currentCards = CardUtils.copyCardList(other.currentCards);
+        this.permanentCards = CardUtils.copyCardList(other.permanentCards);
         displayer = new CardDisplayer();
     }
 

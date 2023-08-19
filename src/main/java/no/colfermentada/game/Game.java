@@ -34,13 +34,11 @@ public class Game implements Cloneable{
         this(new Board());
     }
 
-    @Override
-    public Game clone() throws CloneNotSupportedException {
-        try {
-            return (Game) super.clone();  // Cast the result to Card
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Cannot clone Game", e);
-        }
+    public Game(Game other) {
+        this.player = new Player(other.player);
+        this.board = new Board(other.board);
+        this.score = other.score;
+        this.bones = other.bones;
     }
 
     public Player getPlayer() {

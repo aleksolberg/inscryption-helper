@@ -161,7 +161,7 @@ class CardTest {
             throw new RuntimeException(e);
         }
         // Act
-        Card actual = card.clone();
+        Card actual = new Card(card);
         // Assert
         assertEquals(expected, actual);
     }

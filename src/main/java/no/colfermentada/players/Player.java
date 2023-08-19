@@ -3,7 +3,9 @@ package no.colfermentada.players;
 import no.colfermentada.cards.Card;
 import no.colfermentada.deck.Deck;
 import no.colfermentada.deck.InvalidDeckException;
+import no.colfermentada.game.Game;
 import no.colfermentada.utils.CardDisplayer;
+import no.colfermentada.utils.CardUtils;
 
 import java.util.ArrayList;
 
@@ -15,6 +17,12 @@ public class Player {
     public Player(Deck deck) {
         this.deck = deck;
         hand = new ArrayList<>();
+        displayer = new CardDisplayer();
+    }
+
+    public Player(Player other) {
+        this.deck = new Deck(other.deck);
+        this.hand = CardUtils.copyCardList(other.hand);
         displayer = new CardDisplayer();
     }
 

@@ -87,9 +87,9 @@ class GameTest {
     public void playerAttacks_attacksOpposingCard_shouldReturnCorrectBoard() throws InvalidCardException, InvalidBoardException {
         // Arrange
         Board expected = new Board();
-        Card stoatClone = stoat.clone();
-        Card stuntedWolfClone = stuntedWolf.clone();
-        Card bloodhoundClone = bloodhound.clone();
+        Card stoatClone = new Card(stoat);
+        Card stuntedWolfClone = new Card(stuntedWolf);
+        Card bloodhoundClone = new Card(bloodhound);
         bloodhoundClone.takeDamage(1);
 
         expected.placePlayerCard(stoatClone, 1);
@@ -117,9 +117,9 @@ class GameTest {
     public void opponentAttacks_attacksOpposingCard_shouldReturnCorrectBoard() throws InvalidCardException, InvalidBoardException {
         // Arrange
         Board expected = new Board();
-        Card stoatClone = stoat.clone();
-        Card stuntedWolfClone = stuntedWolf.clone();
-        Card bloodhoundClone = bloodhound.clone();
+        Card stoatClone = new Card(stoat);
+        Card stuntedWolfClone = new Card(stuntedWolf);
+        Card bloodhoundClone = new Card(bloodhound);
         stoatClone.takeDamage(2);
 
         expected.placePlayerCard(stoatClone, 1);

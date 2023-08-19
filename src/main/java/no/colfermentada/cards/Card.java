@@ -6,7 +6,7 @@ import no.colfermentada.utils.CardUtils;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class Card implements Cloneable {
+public class Card {
     private String name;
     private String shortName;
     private int health;
@@ -28,6 +28,19 @@ public class Card implements Cloneable {
         this.cost = builder.cost;
         this.tribe = builder.tribe;
         this.sigils = builder.sigils;
+        displayer = new CardDisplayer();
+    }
+
+    public Card(Card other) {
+        this.name = other.name;
+        this.shortName = other.shortName;
+        this.health = other.health;
+        this.currentHealth = other.currentHealth;
+        this.power = other.power;
+        this.costType = other.costType;
+        this.cost = other.cost;
+        this.tribe = other.tribe;
+        this.sigils = other.sigils;
         displayer = new CardDisplayer();
     }
 
@@ -125,15 +138,6 @@ public class Card implements Cloneable {
     @Override
     public int hashCode() {
         return Objects.hash(name, shortName, health, power, currentHealth, costType, cost, tribe, sigils);
-    }
-
-    @Override
-    public Card clone() {
-        try {
-            return (Card) super.clone();  // Cast the result to Card
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Cannot clone Card", e);
-        }
     }
 
     public String getName() {

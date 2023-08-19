@@ -1,5 +1,9 @@
 package no.colfermentada.utils;
 
+import no.colfermentada.cards.Card;
+
+import java.util.ArrayList;
+
 public final class CardUtils {
     public static String generateShortName(String name) {
         if (name == null || name.length() <= 8) {
@@ -24,5 +28,24 @@ public final class CardUtils {
         } else {
             return result.toString();
         }
+    }
+
+    public static Card[] copyCardArray(Card[] original) {
+        if (original == null) {
+            return null;
+        }
+        Card[] copy = new Card[original.length];
+        for (int i = 0; i < original.length; i++) {
+            copy[i] = (original[i] != null) ? new Card(original[i]) : null;
+        }
+        return copy;
+    }
+
+    public static ArrayList<Card> copyCardList(ArrayList<Card> original) {
+        ArrayList<Card> copy = new ArrayList<>();
+        for (Card card : original) {
+            copy.add(new Card(card));
+        }
+        return copy;
     }
 }

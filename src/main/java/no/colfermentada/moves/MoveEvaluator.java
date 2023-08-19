@@ -57,12 +57,7 @@ public class MoveEvaluator {
     }
 
     public static int evaluateMove(Move move, Game game) {
-        Game gameClone = null;
-        try {
-            gameClone = game.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        Game gameClone = new Game(game);
         try {
             move.executeMove(gameClone);
         } catch (InvalidBoardException e) {
@@ -70,5 +65,19 @@ public class MoveEvaluator {
         }
         gameClone.executeTurn();
         return gameClone.getScore();
+    }
+
+    public static Move findBestSingleMoveSingleTurn(Game game) {
+        ArrayList<Move> validMoves = findValidMoves(game);
+        int maxScore = -9999;
+        Move bestMove = null;
+        for (Move move : validMoves) {
+            int score = evaluateMove(move, game);
+            if (score > maxScore) {
+                maxScore = score;
+                bestMove = move;
+            }
+        }
+        return bestMove;
     }
 }

@@ -3,7 +3,9 @@ package no.colfermentada.board;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.CardTemplate;
 import no.colfermentada.cards.InvalidCardException;
+import no.colfermentada.game.Game;
 import no.colfermentada.utils.CardDisplayer;
+import no.colfermentada.utils.CardUtils;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -28,10 +30,19 @@ public class Board {
         Card squirrel = CardTemplate.createSquirrel();
         squirrelDeck.add(squirrel);
         for (int i = 0; i <= 10; i++) {
-            squirrelDeck.add(squirrel.clone());
+            squirrelDeck.add(new Card(squirrel));
         }
 
         discardedPile = new ArrayList<Card>();
+        displayer = new CardDisplayer();
+    }
+
+    public Board(Board other) {
+        this.playedCards = CardUtils.copyCardArray(other.playedCards);
+        this.opposingCards = CardUtils.copyCardArray(other.opposingCards);
+        this.approachingCards = CardUtils.copyCardArray(other.approachingCards);
+        this.squirrelDeck = CardUtils.copyCardList(other.squirrelDeck);
+        this.discardedPile = CardUtils.copyCardList(other.discardedPile);
         displayer = new CardDisplayer();
     }
 

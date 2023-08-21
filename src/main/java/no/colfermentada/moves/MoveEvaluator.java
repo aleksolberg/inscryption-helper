@@ -56,7 +56,7 @@ public class MoveEvaluator {
         return result;
     }
 
-    public static int evaluateMove(Move move, Game game) {
+    public static int evaluateSingleMoveSingleTurn(Move move, Game game) {
         Game gameClone = new Game(game);
         try {
             move.executeMove(gameClone);
@@ -72,7 +72,7 @@ public class MoveEvaluator {
         int maxScore = -9999;
         Move bestMove = null;
         for (Move move : validMoves) {
-            int score = evaluateMove(move, game);
+            int score = evaluateSingleMoveSingleTurn(move, game);
             if (score > maxScore) {
                 maxScore = score;
                 bestMove = move;

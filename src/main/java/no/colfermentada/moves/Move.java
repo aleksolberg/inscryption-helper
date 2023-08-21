@@ -41,7 +41,7 @@ public class Move {
     }
 
     public String displayMove() {
-        return "Card:\n" + card.displayCard() + "\nSlot: " + slot + "\nSacrifice(s): " + Arrays.toString(sacrifices);
+        return "Card:\n" + card.displayCard() + "Slot: " + slot + ", Sacrifice(s): " + Arrays.toString(sacrifices) + "\n";
     }
 
     public void executeMove(Game game) throws InvalidBoardException {
@@ -52,14 +52,19 @@ public class Move {
                     for (int sacrificeSlot : sacrifices) {
                         game.getBoard().discardCardInSlot(sacrificeSlot);
                     }
-                    break;
                 }
                 case Bones -> {
                     game.decreaseBones(card.getCost());
                 }
             }
-            game.getBoard().placePlayerCard(card, slot);
-            game.getPlayer().receiveCardInHand(card);
+            Card cardPlayed = null;
+            for (Card card : game.getPlayer().getHand()) { // TODO: Find a better way to fix the problem in MoveSequenceEvaluator
+                if (card.equals(this.card)) {
+                    cardPlayed = card;
+                }
+            }
+            game.getBoard().placePlayerCard(cardPlayed, slot);
+            game.getPlayer().removeCardFromHand(cardPlayed);
         } else {
             System.out.println("Move invalid. Not executed.");
         }

@@ -29,7 +29,7 @@ public class Board {
         squirrelDeck = new ArrayList<Card>();
         Card squirrel = CardTemplate.createSquirrel();
         squirrelDeck.add(squirrel);
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i < 10; i++) {
             squirrelDeck.add(new Card(squirrel));
         }
 
@@ -60,7 +60,7 @@ public class Board {
 
     public Card drawSquirrel() throws InvalidBoardException {
         if (!squirrelDeck.isEmpty()) {
-            return (squirrelDeck.remove(0));
+            return squirrelDeck.remove(0);
         } else {
             throw new InvalidBoardException("Cannot draw squirrel from empty sqirrel deck");
         }

@@ -2,15 +2,17 @@ package no.colfermentada;
 
 import no.colfermentada.board.Board;
 import no.colfermentada.board.InvalidBoardException;
-import no.colfermentada.cards.Card;
-import no.colfermentada.cards.CostType;
-import no.colfermentada.cards.Sigil;
-import no.colfermentada.cards.Tribe;
+import no.colfermentada.cards.*;
 import no.colfermentada.deck.Deck;
 import no.colfermentada.game.Game;
 import no.colfermentada.moves.Move;
 import no.colfermentada.moves.MoveEvaluator;
+import no.colfermentada.moves.MoveSequence;
+import no.colfermentada.moves.MoveSequenceEvaluator;
 import no.colfermentada.utils.MoveValidator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,18 +23,30 @@ public class Main {
         game.playerDrawsSquirrel();
         game.playerDrawsFromDeckByIndex(0);
         game.playerDrawsFromDeckByIndex(0);
-
-
-        Move move1 = MoveEvaluator.findBestSingleMoveSingleTurn(game);
-        System.out.println(move1.displayMove());
         try {
-            move1.executeMove(game);
+            game.getBoard().placeOpposingCard(CardTemplate.createBloodhound(), 2);
         } catch (InvalidBoardException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(game.displayGame());
 
-        Move move2 = MoveEvaluator.findBestSingleMoveSingleTurn(game);
-        System.out.println(move2.displayMove());
+        System.out.println(game.displayGame());
+        //MoveSequence bestSequence = MoveSequenceEvaluator.findBestMoveSequenceSingleTurn(game);
+        MoveSequence[] bestSequences = MoveSequenceEvaluator.findBestMoveSequenceTwoTurns(game);
+
+        for (MoveSequence sequence : bestSequences) {
+            for (Move move : sequence.getSequence()) {
+                System.out.println(move.displayMove());
+            }
+        }
+
+        /*Move move1 = MoveEvaluator.findBestSingleMoveSingleTurn(game);
+        Move move2 = new Move(game.getPlayer().getHand().get(2), 0, 0);
+        MoveSequence sequence1 = new MoveSequence(new ArrayList<>(){{add(move1); add(move2);}});
+        try {
+            sequence1.executeSequence(game);
+        } catch (InvalidBoardException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(game.displayGame());*/
     }
 }

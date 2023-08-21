@@ -57,4 +57,8 @@ public class Player {
     public void receiveCardInHand(Card card) {
         hand.add(card);
     }
+
+    public void removeCardFromHand(Card card) {
+        hand.remove(card);
+    }
 }

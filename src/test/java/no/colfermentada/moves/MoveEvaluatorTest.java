@@ -195,7 +195,7 @@ class MoveEvaluatorTest {
         Move move = new Move(stoat, 2, 2);
         int expected = 1;
         // Act
-        int actual = MoveEvaluator.evaluateMove(move, game);
+        int actual = MoveEvaluator.evaluateSingleMoveSingleTurn(move, game);
         // Assert
         assertEquals(expected, actual);
     }

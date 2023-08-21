@@ -12,7 +12,7 @@ import no.colfermentada.utils.Rules;
 
 import java.util.ArrayList;
 
-public class Game implements Cloneable{
+public class Game {
     private Player player;
     private Board board;
     private int score;

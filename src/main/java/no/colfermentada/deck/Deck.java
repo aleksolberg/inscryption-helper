@@ -45,6 +45,7 @@ public class Deck {
         Card bullfrog = CardTemplate.createBullfrog();
 
         Collections.addAll(currentCards, stoat, stuntedWolf, stinkbug, bullfrog);
+        Collections.addAll(permanentCards, stoat, stuntedWolf, stinkbug, bullfrog);
     }
 
     public void addCard(Card card) {

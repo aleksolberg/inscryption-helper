@@ -53,7 +53,8 @@ public class Card {
         private CostType costType;
         private int cost;
         private Tribe tribe;
-        private EnumSet<Sigil> sigils = EnumSet.noneOf(Sigil.class);;
+        private EnumSet<Sigil> sigils = EnumSet.noneOf(Sigil.class);
+        ;
 
         public Builder withName(String name) {
             this.name = name;
@@ -198,5 +199,13 @@ public class Card {
 
     public String displayCard() {
         return displayer.displayCard(this);
+    }
+
+    public void upgradeHealth(int amount) {
+        health += amount;
+    }
+
+    public void upgradePower(int amount) {
+        power += amount;
     }
 }

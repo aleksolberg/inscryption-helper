@@ -18,35 +18,51 @@ public class Main {
     public static void main(String[] args) {
         Deck deck = new Deck();
         deck.populateStandardDeck();
+        deck.addCard(CardTemplate.createMagpie());
+        deck.getPermanentCards().get(4).upgradeHealth(2);
 
         Game game = new Game(deck);
         game.playerDrawsSquirrel();
-        game.playerDrawsFromDeckByIndex(0);
-        game.playerDrawsFromDeckByIndex(0);
+        game.playerDrawsFromDeckByIndex(1);
+        game.playerDrawsFromDeckByIndex(1);
+        game.playerDrawsFromDeckByIndex(2);
+
+        Move playSquirrel1 = new Move(game.getPlayer().getHand().get(0), 0, 0);
         try {
-            game.getBoard().placeOpposingCard(CardTemplate.createBloodhound(), 2);
+            playSquirrel1.executeMove(game);
+        } catch (InvalidBoardException e) {
+            throw new RuntimeException(e);
+        }
+        Move playStuntedWolf = new Move(game.getPlayer().getHand().get(0), 0, 0);
+        try {
+            playStuntedWolf.executeMove(game);
         } catch (InvalidBoardException e) {
             throw new RuntimeException(e);
         }
 
+        try {
+            game.getBoard().placeApproachingCard(CardTemplate.createWolfCub(), 1);
+        } catch (InvalidBoardException e) {
+            throw new RuntimeException(e);
+        }
+
+        game.executeTurn();
+        try {
+            game.getBoard().placeApproachingCard(CardTemplate.createAlpha(), 2);
+        } catch (InvalidBoardException e) {
+            throw new RuntimeException(e);
+        }
+        game.playerDrawsSquirrel();
+
         System.out.println(game.displayGame());
-        //MoveSequence bestSequence = MoveSequenceEvaluator.findBestMoveSequenceSingleTurn(game);
         MoveSequence[] bestSequences = MoveSequenceEvaluator.findBestMoveSequenceTwoTurns(game);
 
         for (MoveSequence sequence : bestSequences) {
+            System.out.println("SEQUENCE:");
             for (Move move : sequence.getSequence()) {
                 System.out.println(move.displayMove());
             }
         }
-
-        /*Move move1 = MoveEvaluator.findBestSingleMoveSingleTurn(game);
-        Move move2 = new Move(game.getPlayer().getHand().get(2), 0, 0);
-        MoveSequence sequence1 = new MoveSequence(new ArrayList<>(){{add(move1); add(move2);}});
-        try {
-            sequence1.executeSequence(game);
-        } catch (InvalidBoardException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(game.displayGame());*/
+        System.out.println(bestSequences[1].getOutcome());
     }
 }

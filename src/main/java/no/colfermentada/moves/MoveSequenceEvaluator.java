@@ -9,6 +9,8 @@ public class MoveSequenceEvaluator {
 
     public static ArrayList<MoveSequence> findValidMoveSequences(Game game, int maxDepth) {
         ArrayList<MoveSequence> sequences = new ArrayList<>();
+        // Adding null move sequence
+        sequences.add(new MoveSequence());
         findMoveSequencesRecursively(game, new MoveSequence(), sequences, maxDepth);
         return sequences;
     }
@@ -93,6 +95,7 @@ public class MoveSequenceEvaluator {
                     numCardsUsed = sequence1.getSequence().size() + sequence2.getSequence().size();
                     if (score > maxScore || (score == maxScore && numCardsUsed < bestNumCardsUsed)) {
                         maxScore = score;
+                        sequence2.setOutcome(score);
                         bestNumCardsUsed = numCardsUsed;
                         bestMoveSequences = new MoveSequence[]{sequence1, sequence2};
                     }

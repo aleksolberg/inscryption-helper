@@ -27,6 +27,11 @@ public class Move {
     public Move(Card card, int slot) {
         this(card, slot, null);
     }
+    public Move () {
+        this.card = null;
+        this.slot = 0;
+        this.sacrifices = null;
+    }
 
     public Card getCard() {
         return card;

@@ -98,4 +98,56 @@ public class CardTemplate {
         }
         return null;
     }
+
+    public static Card createMagpie() {
+        try {
+            return new Card.Builder()
+                    .withName("Magpie")
+                    .withHealth(1)
+                    .withPower(1)
+                    .withCostType(CostType.Blood)
+                    .withCost(2)
+                    .withTribe(Tribe.Avian)
+                    .withSigil(Sigil.Airborne)
+                    .withSigil(Sigil.Hoarder)
+                    .build();
+        } catch (InvalidCardException e) {
+            System.out.println("Could not create Magpie. " +  e.getMessage());
+        }
+        return null;
+    }
+
+    public static Card createWolfCub() {
+        try {
+            return new Card.Builder()
+                    .withName("Wolf Cub")
+                    .withHealth(1)
+                    .withPower(1)
+                    .withCostType(CostType.Blood)
+                    .withCost(1)
+                    .withTribe(Tribe.Canine)
+                    .withSigil(Sigil.Fledgling)
+                    .build();
+        } catch (InvalidCardException e) {
+            System.out.println("Could not create Wolf Cub. " +  e.getMessage());
+        }
+        return null;
+    }
+
+    public static Card createAlpha() {
+        try {
+            return new Card.Builder()
+                    .withName("Alpha")
+                    .withHealth(2)
+                    .withPower(1)
+                    .withCostType(CostType.Bones)
+                    .withCost(4)
+                    .withTribe(Tribe.Canine)
+                    .withSigil(Sigil.Leader)
+                    .build();
+        } catch (InvalidCardException e) {
+            System.out.println("Could not create Alpha. " +  e.getMessage());
+        }
+        return null;
+    }
 }

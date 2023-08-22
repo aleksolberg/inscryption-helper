@@ -53,7 +53,7 @@ public final class Rules {
 
         int requiredBones = card.getCost();
         // Check if enough bones
-        if (requiredBones < bones) {
+        if (requiredBones > bones) {
             throw new InvalidMoveException("Not enough bones");
         }
 

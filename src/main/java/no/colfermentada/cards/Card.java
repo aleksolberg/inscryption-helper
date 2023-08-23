@@ -1,6 +1,5 @@
 package no.colfermentada.cards;
 
-import no.colfermentada.utils.CardDisplayer;
 import no.colfermentada.utils.CardUtils;
 
 import java.util.EnumSet;
@@ -16,7 +15,6 @@ public class Card {
     private int cost;
     private Tribe tribe;
     private EnumSet<Sigil> sigils;
-    private CardDisplayer displayer;
 
     private Card(Builder builder) {
         this.name = builder.name;
@@ -28,7 +26,6 @@ public class Card {
         this.cost = builder.cost;
         this.tribe = builder.tribe;
         this.sigils = builder.sigils;
-        displayer = new CardDisplayer();
     }
 
     public Card(Card other) {
@@ -41,7 +38,6 @@ public class Card {
         this.cost = other.cost;
         this.tribe = other.tribe;
         this.sigils = other.sigils;
-        displayer = new CardDisplayer();
     }
 
     public static class Builder {
@@ -49,7 +45,6 @@ public class Card {
         private String shortName;
         private int health;
         private int power;
-        private int currentHealth = health;
         private CostType costType;
         private int cost;
         private Tribe tribe;
@@ -186,7 +181,7 @@ public class Card {
     }
 
     public EnumSet<Sigil> getSigils() {
-        return EnumSet.copyOf(sigils);
+        return sigils;
     }
 
     public boolean isDead() {
@@ -195,10 +190,6 @@ public class Card {
 
     public void resetHealth() {
         currentHealth = health;
-    }
-
-    public String displayCard() {
-        return displayer.displayCard(this);
     }
 
     public void upgradeHealth(int amount) {

@@ -94,7 +94,7 @@ public class CardTemplate {
                     .withSigil(Sigil.Guardian)
                     .build();
         } catch (InvalidCardException e) {
-            System.out.println("Could not create Stoat. " +  e.getMessage());
+            System.out.println("Could not create Bloodhound. " +  e.getMessage());
         }
         return null;
     }

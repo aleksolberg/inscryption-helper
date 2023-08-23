@@ -5,6 +5,7 @@ import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.CostType;
 import no.colfermentada.game.Game;
+import no.colfermentada.players.InvalidPlayerException;
 import no.colfermentada.utils.MoveValidator;
 
 import java.util.ArrayList;
@@ -60,8 +61,8 @@ public class MoveEvaluator {
         Game gameClone = new Game(game);
         try {
             move.executeMove(gameClone);
-        } catch (InvalidBoardException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidBoardException | InvalidPlayerException | InvalidMoveException e) {
+            System.out.println("Invalid move: " + e.getMessage());
         }
         gameClone.executeTurn();
         return gameClone.getScore();
@@ -69,7 +70,7 @@ public class MoveEvaluator {
 
     public static Move findBestSingleMoveSingleTurn(Game game) {
         ArrayList<Move> validMoves = findValidMoves(game);
-        int maxScore = -9999;
+        int maxScore = Integer.MIN_VALUE;
         Move bestMove = null;
         for (Move move : validMoves) {
             int score = evaluateSingleMoveSingleTurn(move, game);

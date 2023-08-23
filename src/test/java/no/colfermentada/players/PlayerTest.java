@@ -1,16 +1,7 @@
 package no.colfermentada.players;
 
-import no.colfermentada.board.Board;
-import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.*;
-import no.colfermentada.deck.Deck;
-import no.colfermentada.deck.InvalidDeckException;
 import no.colfermentada.game.Game;
-import no.colfermentada.game.InvalidMoveException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
     public Card stoat;

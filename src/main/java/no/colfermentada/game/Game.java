@@ -4,7 +4,6 @@ import no.colfermentada.board.Board;
 import no.colfermentada.board.InvalidBoardException;
 import no.colfermentada.cards.Card;
 import no.colfermentada.cards.InvalidCardException;
-import no.colfermentada.cards.Sigil;
 import no.colfermentada.deck.Deck;
 import no.colfermentada.deck.InvalidDeckException;
 import no.colfermentada.players.Player;
@@ -64,10 +63,6 @@ public class Game {
         return score <= -5;
     }
 
-    public String displayGame() {
-        return board.displayBoard() + player.displayHand() + "Score: " + score + "\nBones: " + bones + "\n";
-    }
-
     protected void increaseScore(int amount) {
         score += amount;
     }
@@ -84,20 +79,12 @@ public class Game {
         bones -= amount;
     }
 
-    public void playerDrawsSquirrel() {
-        try {
-            player.receiveCardInHand(board.drawSquirrel());
-        } catch (InvalidBoardException e) {
-            System.out.println(e.getMessage());
-        }
+    public void playerDrawsSquirrel() throws InvalidBoardException {
+        player.receiveCardInHand(board.drawSquirrel());
     }
 
-    public void playerDrawsFromDeckByIndex(int index) {
-        try {
-            player.drawSpecificCardFromDeckByIndex(index);
-        } catch (InvalidDeckException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public void playerDrawsFromDeckByIndex(int index) throws InvalidDeckException {
+        player.drawSpecificCardFromDeck(index);
     }
 
     public void attackScore(Card attackingCard, boolean isPlayer) {

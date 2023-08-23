@@ -3,6 +3,7 @@ package no.colfermentada.utils;
 import no.colfermentada.cards.Card;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class CardUtils {
     public static String generateShortName(String name) {
@@ -41,8 +42,8 @@ public final class CardUtils {
         return copy;
     }
 
-    public static ArrayList<Card> copyCardList(ArrayList<Card> original) {
-        ArrayList<Card> copy = new ArrayList<>();
+    public static List<Card> copyCardList(List<Card> original) {
+        List<Card> copy = new ArrayList<>();
         for (Card card : original) {
             copy.add(new Card(card));
         }

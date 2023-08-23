@@ -1,7 +1,6 @@
 package no.colfermentada.deck;
 
 import no.colfermentada.cards.*;
-import no.colfermentada.utils.CardDisplayer;
 import no.colfermentada.utils.CardUtils;
 
 import java.util.ArrayList;
@@ -10,24 +9,20 @@ import java.util.Collections;
 public class Deck {
     private ArrayList<Card> currentCards;
     private ArrayList<Card> permanentCards;
-    private CardDisplayer displayer;
 
     public Deck() {
         currentCards = new ArrayList<Card>();
         permanentCards = new ArrayList<Card>();
-        displayer = new CardDisplayer();
     }
 
     public Deck(ArrayList<Card> cards) {
         this.currentCards = new ArrayList<>(cards);
         this.permanentCards = new ArrayList<>(cards);
-        displayer = new CardDisplayer();
     }
 
     public Deck(Deck other) {
-        this.currentCards = CardUtils.copyCardList(other.currentCards);
-        this.permanentCards = CardUtils.copyCardList(other.permanentCards);
-        displayer = new CardDisplayer();
+        this.currentCards = (ArrayList<Card>) CardUtils.copyCardList(other.currentCards);
+        this.permanentCards = (ArrayList<Card>) CardUtils.copyCardList(other.permanentCards);
     }
 
     public ArrayList<Card> getCurrentCards() {
@@ -35,7 +30,7 @@ public class Deck {
     }
 
     public ArrayList<Card> getPermanentCards() {
-        return permanentCards;
+        return new ArrayList<>(permanentCards);
     }
 
     public void populateStandardDeck() {
@@ -88,14 +83,21 @@ public class Deck {
         Collections.shuffle(currentCards);
     }
 
-    public Card drawSpecificCardByIndex(int index) throws InvalidDeckException {
+    public Card drawTopCard() throws InvalidDeckException {
+        if (currentCards.isEmpty()) {
+            throw new InvalidDeckException("Cannot draw card from empty deck");
+        }
+        return currentCards.remove(0);
+    }
+
+    public Card drawSpecificCard(int index) throws InvalidDeckException {
         if (currentCards.isEmpty()) {
             throw new InvalidDeckException("Cannot draw card from empty deck");
         }
         return currentCards.remove(index);
     }
 
-    public  Card drawSpecificCardByCard(Card card) throws InvalidDeckException {
+    public  Card drawSpecificCard(Card card) throws InvalidDeckException {
         if (containsCard(card)) {
             currentCards.remove(card);
             return card;
@@ -107,9 +109,5 @@ public class Deck {
     public void resetDeck () {
         currentCards.clear();
         currentCards.addAll(permanentCards);
-    }
-
-    public String displayPermanentDeck() {
-        return displayer.displayCards(permanentCards);
     }
 }

@@ -94,7 +94,7 @@ class MoveEvaluatorTest {
     public void findValidMoves_emptyBoardOneFreeCardInHand_shouldReturnListOfCorrectLength() {
         // Arrange
         try {
-            game.getPlayer().drawSpecificCardFromDeckByIndex(0);
+            game.getPlayer().drawSpecificCardFromDeck(0);
         } catch (InvalidDeckException e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +119,7 @@ class MoveEvaluatorTest {
             throw new RuntimeException(e);
         }
         try {
-            game.getPlayer().drawSpecificCardFromDeckByIndex(0);
+            game.getPlayer().drawSpecificCardFromDeck(0);
         } catch (InvalidDeckException e) {
             throw new RuntimeException(e);
         }
@@ -144,7 +144,7 @@ class MoveEvaluatorTest {
             throw new RuntimeException(e);
         }
         try {
-            game.getPlayer().drawSpecificCardFromDeckByIndex(1);
+            game.getPlayer().drawSpecificCardFromDeck(1);
         } catch (InvalidDeckException e) {
             throw new RuntimeException(e);
         }

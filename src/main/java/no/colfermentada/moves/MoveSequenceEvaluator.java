@@ -1,12 +1,13 @@
 package no.colfermentada.moves;
 
 import no.colfermentada.board.InvalidBoardException;
+import no.colfermentada.deck.InvalidDeckException;
 import no.colfermentada.game.Game;
+import no.colfermentada.players.InvalidPlayerException;
 
 import java.util.ArrayList;
 
 public class MoveSequenceEvaluator {
-
     public static ArrayList<MoveSequence> findValidMoveSequences(Game game, int maxDepth) {
         ArrayList<MoveSequence> sequences = new ArrayList<>();
         // Adding null move sequence
@@ -28,7 +29,7 @@ public class MoveSequenceEvaluator {
                 newSequence.addMove(move);
                 sequences.add(newSequence);
                 findMoveSequencesRecursively(gameCopy, newSequence, sequences, depth - 1);
-            } catch (InvalidBoardException e) {
+            } catch (InvalidBoardException | InvalidPlayerException | InvalidMoveException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -38,7 +39,7 @@ public class MoveSequenceEvaluator {
         Game gameCopy = new Game(game);
         try {
             sequence.executeMoveSequence(gameCopy);
-        } catch (InvalidBoardException e) {
+        } catch (InvalidBoardException | InvalidMoveException | InvalidPlayerException e) {
             throw new RuntimeException(e);
         }
         gameCopy.executeTurn();
@@ -47,9 +48,9 @@ public class MoveSequenceEvaluator {
 
     public static MoveSequence findBestMoveSequenceSingleTurn(Game game) {
         ArrayList<MoveSequence> validSequences= findValidMoveSequences(game, 100);
-        int maxScore = -9999;
+        int maxScore = Integer.MIN_VALUE;
         MoveSequence bestMoveSequence = null;
-        int bestNumCardsUsed = 9999;
+        int bestNumCardsUsed = Integer.MAX_VALUE;
         int score;
         int numCardsUsed;
         for (MoveSequence sequence : validSequences) {
@@ -65,45 +66,85 @@ public class MoveSequenceEvaluator {
     }
 
     public static MoveSequence[] findBestMoveSequenceTwoTurns(Game game) {
+        MoveSequence[] bestSequences = new MoveSequence[2];
+        int bestScore = Integer.MIN_VALUE;
         ArrayList<MoveSequence> validFirstSequences = findValidMoveSequences(game, 100);
-        int maxScore = -9999;
-        MoveSequence[] bestMoveSequences = null;
-        int bestNumCardsUsed = 9999;
-        int score;
-        int numCardsUsed;
-        for (MoveSequence sequence1 : validFirstSequences) { // Problem: sequence is executed on game it is not calculated on.
-            Game gameCopy = new Game(game);
+
+        for (MoveSequence firstSeq : validFirstSequences) {
+            Game gameAfterFirstSeq = applyMoveSequence(new Game(game), firstSeq);
+            gameAfterFirstSeq.executeTurn();
+
+            if (gameAfterFirstSeq.gameLost()) continue;
+
+            // Draw squirrel
+            Game squirrelGame = new Game(gameAfterFirstSeq);
             try {
-                sequence1.executeMoveSequence(gameCopy);
-                gameCopy.executeTurn();
-                if (gameCopy.gameLost()) {
-                    continue;
-                }
-                gameCopy.playerDrawsSquirrel();
-                ArrayList<MoveSequence> validSecondSequences = findValidMoveSequences(gameCopy, 100);
-                for (MoveSequence sequence2 : validSecondSequences) {
-                    Game gameCopy2 = new Game(gameCopy);
-                    try {
-                        sequence2.executeMoveSequence(gameCopy2);
-                    } catch (InvalidBoardException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    gameCopy2.playerAttacks();
-
-                    score = gameCopy2.getScore();
-                    numCardsUsed = sequence1.getSequence().size() + sequence2.getSequence().size();
-                    if (score > maxScore || (score == maxScore && numCardsUsed < bestNumCardsUsed)) {
-                        maxScore = score;
-                        sequence2.setOutcome(score);
-                        bestNumCardsUsed = numCardsUsed;
-                        bestMoveSequences = new MoveSequence[]{sequence1, sequence2};
-                    }
-                }
+                squirrelGame.playerDrawsSquirrel();
             } catch (InvalidBoardException e) {
                 throw new RuntimeException(e);
             }
+            MoveSequence bestSecondSeqForSquirrel = findBestSecondSequence(squirrelGame);
+            int squirrelScore = (bestSecondSeqForSquirrel != null) ? bestSecondSeqForSquirrel.getOutcome() : Integer.MIN_VALUE;
+
+            // Draw from deck
+            int meanDeckScore = computeMeanScoreForDeckDraw(gameAfterFirstSeq);
+
+            // Compare and select the best
+            if (squirrelScore > meanDeckScore && squirrelScore > bestScore) {
+                bestScore = squirrelScore;
+                bestSequences[0] = firstSeq;
+                bestSequences[1] = bestSecondSeqForSquirrel;
+            } else if (meanDeckScore >= squirrelScore && meanDeckScore >= bestScore) {
+                bestScore = meanDeckScore;
+                bestSequences[0] = firstSeq;
+            }
+            //System.out.println("SquirrelScore: " + squirrelScore);
         }
-        return bestMoveSequences;
+        //System.out.println("Best Score: " + bestScore);
+        return bestSequences;
+    }
+
+    private static Game applyMoveSequence(Game game, MoveSequence sequence) {
+        try {
+            sequence.executeMoveSequence(game);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return game;
+    }
+
+    private static MoveSequence findBestSecondSequence(Game game) {
+        ArrayList<MoveSequence> validSecondSequences = findValidMoveSequences(game, 100);
+        int bestScore = Integer.MIN_VALUE;
+        MoveSequence bestSeq = null;
+
+        for (MoveSequence seq : validSecondSequences) {
+            Game gameCopy = applyMoveSequence(new Game(game), seq);
+            gameCopy.playerAttacks();
+            int score = gameCopy.getScore();
+            if (score > bestScore) {
+                bestScore = score;
+                bestSeq = seq;
+                bestSeq.setOutcome(score);
+            }
+        }
+
+        return bestSeq;
+    }
+
+    private static int computeMeanScoreForDeckDraw(Game game) {
+        int totalScore = 0;
+        int currentDeckSize = game.getPlayer().getDeck().currentSize();
+        for (int i = 0; i < currentDeckSize; i++) {
+            Game gameCopy = new Game(game);
+            try {
+                gameCopy.playerDrawsFromDeckByIndex(i);
+            } catch (InvalidDeckException e) {
+                throw new RuntimeException(e);
+            }
+            MoveSequence bestSecondSeqForCard = findBestSecondSequence(gameCopy);
+            totalScore += bestSecondSeqForCard.getOutcome();
+        }
+        return totalScore / currentDeckSize;
     }
 }

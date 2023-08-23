@@ -41,8 +41,8 @@ public class Board {
         this.playedCards = CardUtils.copyCardArray(other.playedCards);
         this.opposingCards = CardUtils.copyCardArray(other.opposingCards);
         this.approachingCards = CardUtils.copyCardArray(other.approachingCards);
-        this.squirrelDeck = CardUtils.copyCardList(other.squirrelDeck);
-        this.discardedPile = CardUtils.copyCardList(other.discardedPile);
+        this.squirrelDeck = (ArrayList<Card>) CardUtils.copyCardList(other.squirrelDeck);
+        this.discardedPile = (ArrayList<Card>) CardUtils.copyCardList(other.discardedPile);
         displayer = new CardDisplayer();
     }
 

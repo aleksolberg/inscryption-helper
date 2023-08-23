@@ -1,4 +1,4 @@
-package no.colfermentada.game;
+package no.colfermentada.moves;
 
 public class InvalidMoveException extends Exception {
     public InvalidMoveException(String message) {
